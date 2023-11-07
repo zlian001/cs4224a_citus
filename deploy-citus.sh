@@ -10,7 +10,8 @@ SCRIPTSDIR="$HOME/project_files/scripts"
 NODE=$(hostname)
 COORD=$1
 WORKERS=$2
-LOGFILE=${HOME}/cs4224a_citus/logs/citus-startup-${NODE}.log 2>&1
+LOGDIR=${HOME}/cs4224a_citus/logs
+LOGFILE=${LOGDIR}/citus-startup-${NODE}.log 2>&1
 
 echo $(logtime) "node ${NODE}: starting CITUS deployment"
 # install CITUS if not exists
@@ -22,6 +23,10 @@ fi
 
 # start Citus cluster
 echo $(logtime) "node ${NODE}: starting CITUS Server"
+if [[ ! -d "${LOGDIR}" ]]; then
+    echo $(logtime) "node ${NODE}: creating ${LOGDIR}"
+    mkdir -p "${LOGDIR}"
+fi
 #/home/stuproj/cs4224a/pgsql/bin/pg_ctl -D /temp/teama-data -l logfile start
 ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} start
 ${INSTALLDIR}/bin/psql -c "CREATE EXTENSION citus;"
