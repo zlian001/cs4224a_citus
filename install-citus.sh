@@ -76,7 +76,7 @@ INSTALLDIR=$HOME/pgsql
 BASHFILE=$HOME/.bash_profile
 
 
-TEAM_ID=x # IMPORTANT: change x to your actual team identifier (a/b/.../y/z) 
+TEAM_ID=a # IMPORTANT: change x to your actual team identifier (a/b/.../y/z) 
 TEAM_ASCII=$(echo -n "${TEAM_ID}" | od -An -tuC)
 PORT_NUM=$(( 5000+${TEAM_ASCII} ))
 # DATADIR - directory containing database files

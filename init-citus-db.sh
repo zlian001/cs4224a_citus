@@ -5,7 +5,7 @@
 # INSTALLDIR - directory containing installed binaries, libraries, etc.
 INSTALLDIR=$HOME/pgsql
 
-TEAM_ID=x # IMPORTANT: change x to your actual team identifier
+TEAM_ID=a # IMPORTANT: change x to your actual team identifier
 # DATADIR - directory containing database files
 DATADIR=/temp/team${TEAM_ID}-data
 

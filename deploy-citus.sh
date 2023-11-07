@@ -15,7 +15,7 @@ LOGFILE=${LOGDIR}/citus-startup-${NODE}.log 2>&1
 
 echo $(logtime) "node ${NODE}: starting CITUS deployment"
 # install CITUS if not exists
-if [[ ! -d "${TEMPDIR}" ]]; then
+if [ ! -f $HOME/postgresql-15.3.tar.gz ]; then
     echo $(logtime) "node ${NODE}: installing CITUS from scripts"
     source ${SCRIPTSDIR}/install-citus.sh
     source ${SCRIPTSDIR}/init-citus-db.sh
