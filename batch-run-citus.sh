@@ -6,7 +6,7 @@
 #SBATCH --error=/home/stuproj/cs4224a/cs4224a_citus/slurm_output/citus_batch-%j.err
 #SBATCH --nodelist=xcnd45,xcnd46,xcnd47,xcnd48,xcnd49
 ##SBATCH --mem-per-cpu=2G   # memory per CPU core
-##SBATCH --cpus-per-task=24 # CPUs per srun task
+##SBATCH --cpus-per-task=4 # CPUs per srun task
 
 # proj variables
 XACTDIR='/temp/cs4224a/project_files/xact_files'
