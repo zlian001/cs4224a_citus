@@ -83,10 +83,8 @@ PORT_NUM=$(( 5000+${TEAM_ASCII} ))
 DATADIR=/temp/team${TEAM_ID}-data
 
 
-download_postgres
-install_postgres
-download_citus
-install_citus
+#download_postgres
+#install_postgres
+#download_citus
+#install_citus
 update_bashrc 
-
-

@@ -22,6 +22,7 @@ fi
 
 # start Citus cluster
 echo $(logtime) "node ${NODE}: starting CITUS Server"
+source ${SCRIPTSDIR}/install-citus.sh
 source ${SCRIPTSDIR}/init-citus-db.sh
 if [[ ! -d "${LOGDIR}" ]]; then
     echo $(logtime) "node ${NODE}: creating ${LOGDIR}"
