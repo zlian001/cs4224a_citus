@@ -8,7 +8,7 @@ logtime() {
 }
 NODE=$(hostname)
 
-${INSTALLDIR}/bin/psql -U cs4224a -d wholesale -f ${SCRIPTSDIR}/schema.sql
+${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -f ${SCRIPTSDIR}/schema.sql
 echo $(logtime) "created table schemas"
 ${INSTALLDIR}/bin/psql -U cs4224a -d wholesale -c
 \copy WAREHOUSE from "${DATADIR}/warehouse.csv" with csv

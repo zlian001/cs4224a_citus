@@ -18,11 +18,11 @@ echo $(logtime) "node ${NODE}: starting CITUS deployment"
 if [ ! -f $HOME/postgresql-15.3.tar.gz ]; then
     echo $(logtime) "node ${NODE}: installing CITUS from scripts"
     source ${SCRIPTSDIR}/install-citus.sh
-    source ${SCRIPTSDIR}/init-citus-db.sh
 fi
 
 # start Citus cluster
 echo $(logtime) "node ${NODE}: starting CITUS Server"
+source ${SCRIPTSDIR}/init-citus-db.sh
 if [[ ! -d "${LOGDIR}" ]]; then
     echo $(logtime) "node ${NODE}: creating ${LOGDIR}"
     mkdir -p "${LOGDIR}"
@@ -44,5 +44,5 @@ if [ ${NODE} = "$COORD" ]; then
     echo $(logtime) "node ${NODE}: $( ${INSTALLDIR}/bin/psql -c "SELECT * FROM citus_get_active_worker_nodes();" )"
 fi
 
-createdb wholesale
+#createdb $PGDATABASE
 echo $(logtime) "node ${NODE}: completed CITUS deployment"
