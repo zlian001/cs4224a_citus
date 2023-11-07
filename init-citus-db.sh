@@ -12,11 +12,8 @@ DATADIR=/temp/team${TEAM_ID}-data
 
 mkdir -p ${DATADIR}
 ${INSTALLDIR}/bin/initdb -D ${DATADIR}
-if [ -e ${DATADIR}/postgresql.conf ]; then
-	grep -q citus ${DATADIR}/postgresql.conf
-	if [ $0 -ne 0 ]; then
-		echo "shared_preload_libraries = 'citus'" >> ${DATADIR}/postgresql.conf
-	fi
+if ! grep -q "citus" "$CONFIG_FILE"; then
+	echo "shared_preload_libraries = 'citus'" >> ${DATADIR}/postgresql.conf
 else
 	echo "ERROR: ${DATADIR}/postgresql.conf missing!"
 fi
