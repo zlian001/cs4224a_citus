@@ -15,8 +15,8 @@ SCRIPTSDIR="$HOME/project_files/scripts"
 CONSISTENCYLEVEL='ONE'
 
 # CITUS node variables
-COORD="xcnc45"
-WORKERS="xcnc46;xcnc47;xcnc48;xcnc49"
+COORD="xcnd45"
+WORKERS="xcnd46;xcnd47;xcnd48;xcnd49"
 
 # define tasks flags with default values
 deploy_citus=false
