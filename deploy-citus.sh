@@ -28,7 +28,7 @@ if [[ ! -d "${LOGDIR}" ]]; then
     mkdir -p "${LOGDIR}"
 fi
 #/home/stuproj/cs4224a/pgsql/bin/pg_ctl -D /temp/teama-data -l logfile start
-${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} start
+${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start
 ${INSTALLDIR}/bin/psql -c "CREATE EXTENSION citus;"
 echo $(logtime) "node ${NODE}: $(ps -ef | grep postgres | grep -v grep)"
 
