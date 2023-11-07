@@ -15,8 +15,8 @@ SCRIPTSDIR="$HOME/project_files/scripts"
 CONSISTENCYLEVEL='ONE'
 
 # CITUS node variables
-COORD="xcnd45"
-WORKERS=("xcnd46,xcnd47,xcnd48,xcnd49")
+COORD="xcnc45"
+WORKERS=("xcnc46,xcnc47,xcnc48,xcnc49")
 
 # define tasks flags with default values
 deploy_citus=false
@@ -39,7 +39,7 @@ done
 # deploy CITUS and project files
 if $deploy_citus; then
     #srun ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
-    srun --nodes=5 --ntasks=5 --partition long --nodelist=xcnd45,xcnd46,xcnd47,xcnd48,xcnd49 ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
+    srun --nodes=5 --ntasks=5 --partition long --nodelist=xcnc45,xcnc46,xcnc47,xcnc48,xcnc49 ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
     echo $(logtime) "started CITUS on cluster"
     srun cp -rp $HOME/project_files /temp/cs4224a/
     echo $(logtime) "copied project data and xact files to nodes"
