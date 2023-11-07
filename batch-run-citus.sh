@@ -4,7 +4,7 @@
 #SBATCH --time=01:00:00
 #SBATCH --output=/home/stuproj/cs4224a/cs4224a_citus/slurm_output/citus_batch-%j.out
 #SBATCH --error=/home/stuproj/cs4224a/cs4224a_citus/slurm_output/citus_batch-%j.err
-#SBATCH --nodelist=xcnc0,xcnc1,xcnc2,xcnc3,xcnc4
+#SBATCH --nodelist=xcnd40,xcnd41,xcnd42,xcnd43,xcnd44
 #SBATCH --mem-per-cpu=2G   # memory per CPU core
 #SBATCH --cpus-per-task=24 # CPUs per srun task
 
@@ -15,8 +15,8 @@ SCRIPTSDIR="$HOME/project_files/scripts"
 CONSISTENCYLEVEL='ONE'
 
 # CITUS node variables
-COORD="xcnc0"
-WORKERS=("xcnc1,xcnc2,xcnc3,xcnc4")
+COORD="xcnd40"
+WORKERS=("xcnd41,xcnd42,xcnd43,xcnd44")
 
 # define tasks flags with default values
 deploy_citus=false
