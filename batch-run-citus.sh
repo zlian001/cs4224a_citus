@@ -38,8 +38,8 @@ done
 
 # deploy CITUS and project files
 if $deploy_citus; then
-    srun ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
-    #srun --nodes=5 --ntasks=5 --cpus-per-task=16 --nodelist=xcnd40,xcnd41,xcnd42,xcnd43,xcnd44 ${SCRIPTSDIR}/deploy_citus.sh &
+    #srun ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
+    srun --nodes=5 --ntasks=5 --cpus-per-task=24 --nodelist=xcnd40,xcnd41,xcnd42,xcnd43,xcnd44 ${SCRIPTSDIR}/deploy_citus.sh ${COORD} ${WORKERS[@]} &
     echo $(logtime) "started CITUS on cluster"
     srun cp -rp $HOME/project_files /temp/cs4224a/
     echo $(logtime) "copied project data and xact files to nodes"
