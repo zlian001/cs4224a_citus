@@ -44,4 +44,5 @@ if [ ${NODE} = "$COORD" ]; then
     echo $(logtime) "node ${NODE}: $( ${INSTALLDIR}/bin/psql -c "SELECT * FROM citus_get_active_worker_nodes();" )"
 fi
 
+createdb wholesale
 echo $(logtime) "node ${NODE}: completed CITUS deployment"
