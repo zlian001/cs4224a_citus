@@ -16,7 +16,7 @@ CONSISTENCYLEVEL='ONE'
 
 # CITUS node variables
 COORD="xcnc45"
-WORKERS=("xcnc46,xcnc47,xcnc48,xcnc49")
+WORKERS="xcnc46;xcnc47;xcnc48;xcnc49"
 
 # define tasks flags with default values
 deploy_citus=false

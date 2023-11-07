@@ -38,7 +38,8 @@ if [ ${NODE} = "$COORD" ]; then
     # register the hostname that future workers will use to connect to the coordinator node
     ${INSTALLDIR}/bin/psql -c "SELECT citus_set_coordinator_host('${COORD}', $PGPORT);"
     echo $(logtime) "node ${NODE}: COORD Node registered."
-    for i in "${WORKERS[@]}"; do
+    IFS=";" read -ra my_array <<< "$WORKERS"
+    for i in "${my_array[@]}"; do
         ${INSTALLDIR}/bin/psql -c "SELECT * from citus_add_node('$i', $PGPORT);"
         echo $(logtime) "node ${NODE}: WORKER Node $i added."
     done
