@@ -6,6 +6,7 @@ logtime() {
 
 INSTALLDIR=$HOME/pgsql
 TEMPDIR='/temp/teama-data'
+SCRIPTSDIR="$HOME/project_files/scripts"
 NODE=$(hostname)
 COORD=$1
 WORKERS=$2
@@ -15,8 +16,8 @@ echo $(logtime) "node ${NODE}: starting CITUS deployment"
 # install CITUS if not exists
 if [[ ! -d "${TEMPDIR}" ]]; then
     echo $(logtime) "node ${NODE}: installing CITUS from scripts"
-    source ${HOME}/install-citus.sh
-    source ${HOME}/init-citus-db.sh
+    source ${SCRIPTSDIR}/install-citus.sh
+    source ${SCRIPTSDIR}/init-citus-db.sh
 fi
 
 # start Citus cluster
