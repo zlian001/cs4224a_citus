@@ -35,10 +35,10 @@ echo $(logtime) "node ${NODE}: $(ps -ef | grep postgres | grep -v grep)"
 # coordinator node only
 if [ ${NODE} = "$COORD" ]; then
     # register the hostname that future workers will use to connect to the coordinator node
-    ${INSTALLDIR}/bin/psql -c "SELECT citus_set_coordinator_host('${COORD}', ${PORT_NUM});"
+    ${INSTALLDIR}/bin/psql -c "SELECT citus_set_coordinator_host('${COORD}', $PGPORT);"
     echo $(logtime) "node ${NODE}: COORD Node registered."
     for i in "${WORKERS[@]}"; do
-        ${INSTALLDIR}/bin/psql -c "SELECT * from citus_add_node('$i', ${PORT_NUM});"
+        ${INSTALLDIR}/bin/psql -c "SELECT * from citus_add_node('$i', $PGPORT);"
         echo $(logtime) "node ${NODE}: WORKER Node $i added."
     done
     echo $(logtime) "node ${NODE}: $( ${INSTALLDIR}/bin/psql -c "SELECT * FROM citus_get_active_worker_nodes();" )"
