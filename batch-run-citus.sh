@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --job-name=teamA_citus_batch
 #SBATCH --partition=long
-#SBATCH --time=01:00:00
+#SBATCH --time=03:00:00
 #SBATCH --output=/home/stuproj/cs4224a/cs4224a_citus/slurm_output/citus_batch-%j.out
 #SBATCH --error=/home/stuproj/cs4224a/cs4224a_citus/slurm_output/citus_batch-%j.err
-#SBATCH --nodelist=xcnd45,xcnd46,xcnd47,xcnd48,xcnd49
-##SBATCH --mem-per-cpu=2G   # memory per CPU core
-##SBATCH --cpus-per-task=4 # CPUs per srun task
+#SBATCH --nodelist=xcnd[45-49]
+#SBATCH --mem-per-cpu=2G   # memory per CPU core
+#SBATCH --cpus-per-task=4 # CPUs per srun task
 
 # proj variables
 XACTDIR='/temp/cs4224a/project_files/xact_files'
@@ -39,10 +39,12 @@ done
 # deploy CITUS and project files
 if $deploy_citus; then
     #srun ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
-    srun --nodes=5 --ntasks=5 --partition long --nodelist=xcnc45,xcnc46,xcnc47,xcnc48,xcnc49 ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
+    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnd[45-49] ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
     echo $(logtime) "started CITUS on cluster"
     srun cp -rp $HOME/project_files /temp/cs4224a/
     echo $(logtime) "copied project data and xact files to nodes"
+    # test slp
+    sleep 3600
 fi
 
 # check all 5 nodes are up and in normal state (UN) before executing operations on cluster

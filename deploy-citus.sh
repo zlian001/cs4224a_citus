@@ -28,6 +28,9 @@ if [[ ! -d "${LOGDIR}" ]]; then
     echo $(logtime) "node ${NODE}: creating ${LOGDIR}"
     mkdir -p "${LOGDIR}"
 fi
+
+sleep 60
+
 #/home/stuproj/cs4224a/pgsql/bin/pg_ctl -D /temp/teama-data -l logfile start
 ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start
 ${INSTALLDIR}/bin/psql -c "CREATE EXTENSION citus;"
@@ -49,3 +52,6 @@ fi
 
 createdb $PGDATABASE
 echo $(logtime) "node ${NODE}: completed CITUS deployment"
+
+echo $(logtime) "node ${NODE}: sleep 3600 after CITUS deployment"
+sleep 3600
