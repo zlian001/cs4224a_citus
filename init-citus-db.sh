@@ -14,6 +14,7 @@ mkdir -p ${DATADIR}
 ${INSTALLDIR}/bin/initdb -D ${DATADIR}
 if ! grep -q "citus" "$CONFIG_FILE"; then
 	echo "shared_preload_libraries = 'citus'" >> ${DATADIR}/postgresql.conf
+	echo "listen_addresses = '*'" >> ${DATADIR}/postgresql.conf
 else
 	echo "ERROR: ${DATADIR}/postgresql.conf missing!"
 fi
