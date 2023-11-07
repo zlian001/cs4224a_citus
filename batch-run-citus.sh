@@ -1,12 +1,12 @@
 #!/bin/bash
-SBATCH --job-name=teamA_citus_batch
-SBATCH --partition=medium
-SBATCH --time=01:00:00
-SBATCH --output=/home/stuproj/cs4224a/cs4224a_citus/slurm_output/citus_batch-%j.out
-SBATCH --error=/home/stuproj/cs4224a/cs4224a_citus/slurm_output/citus_batch-%j.err
-SBATCH --nodelist=xcnc0,xcnc1,xcnc2,xcnc3,xcnc4
-SBATCH --mem-per-cpu=2G   # memory per CPU core
-SBATCH --cpus-per-task=24 # CPUs per srun task
+#SBATCH --job-name=teamA_citus_batch
+#SBATCH --partition=medium
+#SBATCH --time=01:00:00
+#SBATCH --output=/home/stuproj/cs4224a/cs4224a_citus/slurm_output/citus_batch-%j.out
+#SBATCH --error=/home/stuproj/cs4224a/cs4224a_citus/slurm_output/citus_batch-%j.err
+#SBATCH --nodelist=xcnc0,xcnc1,xcnc2,xcnc3,xcnc4
+#SBATCH --mem-per-cpu=2G   # memory per CPU core
+#SBATCH --cpus-per-task=24 # CPUs per srun task
 
 # proj variables
 XACTDIR='/temp/cs4224a/project_files/xact_files'
@@ -38,7 +38,7 @@ done
 
 # deploy CITUS and project files
 if $deploy_citus; then
-    srun ${SCRIPTSDIR}/deploy_citus.sh ${COORD} ${WORKERS[@]} &
+    srun ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
     #srun --nodes=5 --ntasks=5 --cpus-per-task=16 --nodelist=xcnd40,xcnd41,xcnd42,xcnd43,xcnd44 ${SCRIPTSDIR}/deploy_citus.sh &
     echo $(logtime) "started CITUS on cluster"
     srun cp -rp $HOME/project_files /temp/cs4224a/
