@@ -12,7 +12,6 @@
 XACTDIR='/temp/cs4224a/project_files/xact_files'
 RESULTSDIR='/home/stuproj/cs4224a/cs4224a_cassandra/results'
 SCRIPTSDIR="$HOME/project_files/scripts"
-CONSISTENCYLEVEL='ONE'
 
 # CITUS node variables
 COORD="xcnd45"
@@ -43,32 +42,13 @@ if $deploy_citus; then
     echo $(logtime) "started CITUS on cluster"
     srun cp -rp $HOME/project_files /temp/cs4224a/
     echo $(logtime) "copied project data and xact files to nodes"
-    # test slp
-    sleep 3600
 fi
-
-# check all 5 nodes are up and in normal state (UN) before executing operations on cluster
-#num_un_nodes=0
-#while [[ "$num_un_nodes" -ne 5 ]]; do
-#    # get CITUS nodes status
-#    status=$(nodetool -h 192.168.51.3 status)
-#
-#    # count the number of nodes that are up and in normal state
-#    num_un_nodes=$(echo "$status" | grep -w 'UN' | wc -l)
-#
-#    # if not all nodes are up and in normal state, sleep for a while before checking again
-#    if [[ "$num_un_nodes" -ne 5 ]]; then
-#        echo "not all nodes are in UN state, retrying in 10 seconds..."
-#        sleep 10
-#    fi
-#done
-#echo $(logtime) "all nodes are in UN state, proceeding with remaining operations..."
-#fi
 
 # creating schemas and loading data from COORD node
 if $load_data; then
     echo $(logtime) "creating table schemas and loading data using ${COORD}"
-    srun --nodes=1 --ntasks=1 --cpus-per-task=4 --nodelist=xcnd40 ${SCRIPTSDIR}/load_data.sh
+    srun --nodes=1 --ntasks=1 --cpus-per-task=4 --nodelist=xcnd45 ${SCRIPTSDIR}/load-citus-data.sh
+    sleep 3600
 fi
 
 # # execute transactions
