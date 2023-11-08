@@ -133,11 +133,3 @@ CREATE TABLE stock (
   S_DATA VARCHAR(24) DEFAULT NULL,
   PRIMARY KEY (S_W_ID,S_I_ID)
 );
-
-SELECT create_distributed_table('warehouse', 'W_ID');
-SELECT create_distributed_table('district', 'D_W_ID');
-SELECT create_distributed_table('customer', 'C_W_ID');
-SELECT create_distributed_table('customer_order', 'O_W_ID');
-SELECT create_reference_table('item');
-SELECT create_distributed_table('order_line', 'OL_W_ID');
-SELECT create_distributed_table('stock', 'S_W_ID');

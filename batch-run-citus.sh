@@ -48,7 +48,7 @@ fi
 # creating schemas and loading data from COORD node
 if $load_data; then
     echo $(logtime) "creating table schemas and loading data using ${COORD}"
-    srun --nodes=1 --ntasks=1 --cpus-per-task=4 --nodelist=xcnd45 ${SCRIPTSDIR}/load-citus-data.sh
+    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnd[45-49] ${SCRIPTSDIR}/load-citus-data.sh ${COORD} &
     sleep 3600
 fi
 
