@@ -57,8 +57,8 @@ CREATE TABLE customer (
 );
 CREATE INDEX idx_customer ON customer (C_W_ID,C_D_ID,C_LAST);
 
-DROP TABLE IF EXISTS order;
-CREATE TABLE order (
+DROP TABLE IF EXISTS customer_order;
+CREATE TABLE customer_order (
   O_W_ID INTEGER DEFAULT '0' NOT NULL,
   O_D_ID INTEGER DEFAULT '0' NOT NULL,
   O_ID INTEGER DEFAULT '0' NOT NULL,
@@ -71,14 +71,14 @@ CREATE TABLE order (
   UNIQUE (O_W_ID,O_D_ID,O_C_ID,O_ID),
   CONSTRAINT O_FKEY_C FOREIGN KEY (O_C_ID, O_D_ID, O_W_ID) REFERENCES customer (C_ID, C_D_ID, C_W_ID)
 );
-CREATE INDEX idx_order ON order (O_W_ID,O_D_ID,O_C_ID);
+CREATE INDEX idx_customer_order ON customer_order (O_W_ID,O_D_ID,O_C_ID);
 
 CREATE TABLE new_order (
   NO_O_ID INTEGER DEFAULT '0' NOT NULL,
   NO_D_ID INTEGER DEFAULT '0' NOT NULL,
   NO_W_ID SMALLINT DEFAULT '0' NOT NULL,
   CONSTRAINT NO_PK_TREE PRIMARY KEY (NO_D_ID,NO_W_ID,NO_O_ID),
-  CONSTRAINT NO_FKEY_O FOREIGN KEY (NO_O_ID, NO_D_ID, NO_W_ID) REFERENCES order (O_ID, O_D_ID, O_W_ID)
+  CONSTRAINT NO_FKEY_O FOREIGN KEY (NO_O_ID, NO_D_ID, NO_W_ID) REFERENCES customer_order (O_ID, O_D_ID, O_W_ID)
 );
 
 DROP TABLE IF EXISTS item;
@@ -104,14 +104,14 @@ CREATE TABLE order_line (
   OL_QUANTITY INTEGER DEFAULT NULL,
   OL_DIST_INFO CHAR(24) DEFAULT NULL,
   PRIMARY KEY (OL_W_ID,OL_D_ID,OL_O_ID,OL_NUMBER),
-  CONSTRAINT OL_FKEY_O FOREIGN KEY (OL_O_ID, OL_D_ID, OL_W_ID) REFERENCES order (O_ID, O_D_ID, O_W_ID),
+  CONSTRAINT OL_FKEY_O FOREIGN KEY (OL_O_ID, OL_D_ID, OL_W_ID) REFERENCES customer_order (O_ID, O_D_ID, O_W_ID),
   CONSTRAINT OL_FKEY_I FOREIGN KEY (OL_I_ID) REFERENCES item (I_ID)
 );
 CREATE INDEX idx_order_line_tree ON order_line (OL_W_ID,OL_D_ID,OL_O_ID);
 
 DROP TABLE IF EXISTS stock;
 CREATE TABLE stock (
-  S_W_ID INTEGER DEFAULT '0 ' NOT NULL REFERENCES warehouse (W_ID),
+  S_W_ID INTEGER DEFAULT '0' NOT NULL REFERENCES warehouse (W_ID),
   S_I_ID INTEGER DEFAULT '0' NOT NULL REFERENCES item (I_ID),
   S_QUANTITY INTEGER DEFAULT '0' NOT NULL,
   S_YTD INTEGER DEFAULT NULL,
@@ -134,7 +134,7 @@ CREATE TABLE stock (
 SELECT create_distributed_table('warehouse', 'W_ID');
 SELECT create_distributed_table('district', 'D_W_ID');
 SELECT create_distributed_table('customer', 'C_W_ID');
-SELECT create_distributed_table('order', 'O_W_ID');
+SELECT create_distributed_table('customer_order', 'O_W_ID');
 SELECT create_reference_table('item');
 SELECT create_distributed_table('order_line', 'OL_W_ID');
 SELECT create_distributed_table('stock', 'S_W_ID');
