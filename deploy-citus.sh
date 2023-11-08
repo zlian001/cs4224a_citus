@@ -34,20 +34,19 @@ if [[ ! -d "${LOGDIR}" ]]; then
     echo $(logtime) "node ${NODE}: creating ${LOGDIR}"
     mkdir -p "${LOGDIR}"
 fi
-#/home/stuproj/cs4224a/pgsql/bin/pg_ctl -D /temp/teama-data -l logfile start
 ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start
-#${INSTALLDIR}/bin/psql -c "CREATE EXTENSION citus;"
+${INSTALLDIR}/bin/psql -c "CREATE EXTENSION citus;"
 echo $(logtime) "node ${NODE}: $(ps -ef | grep postgres | grep -v grep)"
 # coordinator node only
 sleep 60
 if [ ${NODE} = "$COORD" ]; then
     # register the hostname that future workers will use to connect to the coordinator node
-#    ${INSTALLDIR}/bin/psql -c "SELECT citus_set_coordinator_host('${COORD}', $PGPORT);"
-#    echo $(logtime) "node ${NODE}: COORD Node registered."
-#    for i in "${my_array[@]}"; do
-#        ${INSTALLDIR}/bin/psql -c "SELECT * from citus_add_node('$i', $PGPORT);"
-#        echo $(logtime) "node ${NODE}: WORKER Node $i added."
-#    done
+    ${INSTALLDIR}/bin/psql -c "SELECT citus_set_coordinator_host('${COORD}', $PGPORT);"
+    echo $(logtime) "node ${NODE}: COORD Node registered."
+    for i in "${my_array[@]}"; do
+        ${INSTALLDIR}/bin/psql -c "SELECT * from citus_add_node('$i', $PGPORT);"
+        echo $(logtime) "node ${NODE}: WORKER Node $i added."
+    done
     echo $(logtime) "node ${NODE}: $( ${INSTALLDIR}/bin/psql -c "SELECT * FROM citus_get_active_worker_nodes();" )"
 fi
 

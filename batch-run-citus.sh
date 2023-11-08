@@ -9,6 +9,10 @@
 #SBATCH --cpus-per-task=4 # CPUs per srun task
 
 # proj variables
+INSTALLDIR=$HOME/pgsql
+TEMPDIR='/temp/teama-data'
+LOGDIR=${HOME}/cs4224a_citus/logs
+LOGFILE=${LOGDIR}/citus-startup-${NODE}.log 2>&1
 XACTDIR='/temp/cs4224a/project_files/xact_files'
 RESULTSDIR='/home/stuproj/cs4224a/cs4224a_cassandra/results'
 SCRIPTSDIR="$HOME/project_files/scripts"
@@ -16,9 +20,11 @@ SCRIPTSDIR="$HOME/project_files/scripts"
 # CITUS node variables
 COORD="xcnd45"
 WORKERS="xcnd46;xcnd47;xcnd48;xcnd49"
+NODE=$(hostname)
 
 # define tasks flags with default values
 deploy_citus=false
+start_citus=false
 load_data=false
 exec_transactions=false
 
@@ -30,6 +36,7 @@ logtime() {
 while getopts dscft flag; do
     case "${flag}" in
         d) deploy_citus=true;;
+        s) start_citus=true;;
         f) load_data=true;;
         t) exec_transactions=true;;
     esac
@@ -37,12 +44,22 @@ done
 
 # deploy CITUS and project files
 if $deploy_citus; then
-    #srun ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
+    echo $(logtime) "deploying CITUS cluster"
     srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnd[45-49] ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
-    echo $(logtime) "started CITUS on cluster"
     srun cp -rp $HOME/project_files /temp/cs4224a/
     echo $(logtime) "copied project data and xact files to nodes"
-    sleep 3600
+fi
+
+# start CITUS cluster
+if $start_citus; then
+    echo $(logtime) "starting CITUS cluster"
+    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnd[45-49] ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start &
+    sleep 60
+    echo $(logtime) "node ${NODE}: $(ps -ef | grep postgres | grep -v grep)"
+    if [ ${NODE} = "$COORD" ]; then
+        echo $(logtime) "node ${NODE}: $( ${INSTALLDIR}/bin/psql -c "SELECT * FROM citus_get_active_worker_nodes();" )"
+    fi
+    echo $(logtime) "started CITUS cluster"
 fi
 
 # creating schemas and loading data from COORD node
