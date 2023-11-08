@@ -30,7 +30,7 @@ logtime() {
 while getopts dscft flag; do
     case "${flag}" in
         d) deploy_citus=true;;
-        l) load_data=true;;
+        f) load_data=true;;
         t) exec_transactions=true;;
     esac
 done
