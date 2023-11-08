@@ -43,18 +43,10 @@ if [[ ! -d "${LOGDIR}" ]]; then
     mkdir -p "${LOGDIR}"
 fi
 
-if [ ! ${NODE} = "$COORD" ]; then
-    echo "host    all             all             $(nslookup $COORD | awk '/^Address: / { print $2 }')/32              trust" >> ${TEMPDIR}/pg_hba.conf
-    for i in "${my_array[@]}"; do
-        if [ ${NODE} != $i ]; then
-            echo "host    all             all             $(nslookup $i | awk '/^Address: / { print $2 }')/32              trust" >> ${TEMPDIR}/pg_hba.conf
-        fi
-    done
-else
-    for i in "${my_array[@]}"; do
-        echo "host    all             all             $(nslookup $i | awk '/^Address: / { print $2 }')/32              trust" >> ${TEMPDIR}/pg_hba.conf
-    done
-fi
+echo "host    all             all             $(nslookup $COORD | awk '/^Address: / { print $2 }')/32              trust" >> ${TEMPDIR}/pg_hba.conf
+for i in "${my_array[@]}"; do
+    echo "host    all             all             $(nslookup $i | awk '/^Address: / { print $2 }')/32              trust" >> ${TEMPDIR}/pg_hba.conf
+done
 
 #/home/stuproj/cs4224a/pgsql/bin/pg_ctl -D /temp/teama-data -l logfile start
 ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start
