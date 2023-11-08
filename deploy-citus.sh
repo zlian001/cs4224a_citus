@@ -22,18 +22,10 @@ if [ ! -d ${TEMPDIR} ]; then
     source ${SCRIPTSDIR}/init-citus-db.sh
     createdb $PGDATABASE
     echo "listen_addresses = '*'" >> ${TEMPDIR}/postgresql.conf
-    if [ ! ${NODE} = "$COORD" ]; then
-        echo "host    all             all             $(nslookup $COORD | awk '/^Address: / { print $2 }')/32              trust" >> ${TEMPDIR}/pg_hba.conf
-        for i in "${my_array[@]}"; do
-            if [ ${NODE} != $i ]; then
-                echo "host    all             all             $(nslookup $i | awk '/^Address: / { print $2 }')/32              trust" >> ${TEMPDIR}/pg_hba.conf
-            fi
-        done
-    else
-        for i in "${my_array[@]}"; do
-            echo "host    all             all             $(nslookup $i | awk '/^Address: / { print $2 }')/32              trust" >> ${TEMPDIR}/pg_hba.conf
-        done
-    fi
+    echo "host    all             all             $(nslookup $COORD | awk '/^Address: / { print $2 }')/32              trust" >> ${TEMPDIR}/pg_hba.conf
+    for i in "${my_array[@]}"; do
+        echo "host    all             all             $(nslookup $i | awk '/^Address: / { print $2 }')/32              trust" >> ${TEMPDIR}/pg_hba.conf
+    done
 fi
 
 # start Citus cluster
@@ -42,18 +34,12 @@ if [[ ! -d "${LOGDIR}" ]]; then
     echo $(logtime) "node ${NODE}: creating ${LOGDIR}"
     mkdir -p "${LOGDIR}"
 fi
-
-echo "host    all             all             $(nslookup $COORD | awk '/^Address: / { print $2 }')/32              trust" >> ${TEMPDIR}/pg_hba.conf
-for i in "${my_array[@]}"; do
-    echo "host    all             all             $(nslookup $i | awk '/^Address: / { print $2 }')/32              trust" >> ${TEMPDIR}/pg_hba.conf
-done
-
 #/home/stuproj/cs4224a/pgsql/bin/pg_ctl -D /temp/teama-data -l logfile start
 ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start
 ${INSTALLDIR}/bin/psql -c "CREATE EXTENSION citus;"
 echo $(logtime) "node ${NODE}: $(ps -ef | grep postgres | grep -v grep)"
 # coordinator node only
-sleep 60
+sleep 120
 if [ ${NODE} = "$COORD" ]; then
     # register the hostname that future workers will use to connect to the coordinator node
     ${INSTALLDIR}/bin/psql -c "SELECT citus_set_coordinator_host('${COORD}', $PGPORT);"
