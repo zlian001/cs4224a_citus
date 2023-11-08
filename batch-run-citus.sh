@@ -42,6 +42,7 @@ if $deploy_citus; then
     echo $(logtime) "started CITUS on cluster"
     srun cp -rp $HOME/project_files /temp/cs4224a/
     echo $(logtime) "copied project data and xact files to nodes"
+    sleep 3600
 fi
 
 # creating schemas and loading data from COORD node
