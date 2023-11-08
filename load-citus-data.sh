@@ -11,6 +11,11 @@ logtime() {
 
 ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -f ${SCRIPTSDIR}/schema.sql
 echo $(logtime) "created table schemas"
+echo $(logtime) "node ${NODE}: converting null strings to empty fields in data files" 
+# convert 'null' string data to -1 int value so cql query can query empty O_CARRIER_ID value
+sed 's/,null,/,-1,/' ${DATADIR}/order.csv > ${DATADIR}/order_null.csv
+# convert 'null' strings to empty field `,,`
+sed 's/,null,/,,/' ${DATADIR}/order-line.csv > ${DATADIR}/order-line_null.csv
 if [ ${NODE} = "$COORD" ]; then
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('warehouse', 'W_ID');"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('district', 'D_W_ID');"
@@ -23,7 +28,7 @@ if [ ${NODE} = "$COORD" ]; then
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy WAREHOUSE from "${DATADIR}/warehouse.csv" with csv"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy DISTRICT from "${DATADIR}/district.csv" with csv"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy CUSTOMER from "${DATADIR}/customer.csv" with csv"
-    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy ORDER from "${DATADIR}/order.csv" with csv"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy CUSTOMER_ORDER from "${DATADIR}/order.csv" with csv"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy ITEM from "${DATADIR}/item.csv" with csv"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy ORDER_LINE from "${DATADIR}/order-line.csv" with csv"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy STOCK from "${DATADIR}/stock.csv" with csv"
