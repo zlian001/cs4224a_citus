@@ -248,8 +248,25 @@ class Transactions:
 
         return
 
-    # define the datatypes for each transaction
+    # popular-item transaction 2.6
+    def popular_item_txn(self, w_id, d_id, l):
+        print(
+            f"Popular Item Transaction Output for warehouse id {w_id}, district id {d_id}, number of last orders {l}:")
 
+        query = self.stmts["POPULAR_ITEM_TXN_QUERIES"]["findPopularItems"]
+
+        with self.conn:
+            with self.conn.cursor() as cur:
+                cur.execute(query, (w_id, d_id, w_id, d_id, l, l, l))
+                results = cur.fetchall()
+
+        for row in results:
+            print(
+                f"Order ID: {row[0]}, Entry Date: {row[1]}, Customer: {row[2]} {row[3]} {row[4]}, Item Name: {row[5]}, Quantity: {row[6]}, Popularity Percentage: {row[7]:.2f}%")
+
+        return
+
+    # define the datatypes for each transaction
     def cast_new_order_dtypes(self, params):
         return [int(params[0]), int(params[1]), int(params[2]), int(params[3])]
 
@@ -269,6 +286,9 @@ class Transactions:
         return []
 
     def cast_related_customer_dtypes(self, params):
+        return [int(params[0]), int(params[1]), int(params[2])]
+
+    def cast_popular_item_dtypes(self, params):
         return [int(params[0]), int(params[1]), int(params[2])]
 
     def close(self):
