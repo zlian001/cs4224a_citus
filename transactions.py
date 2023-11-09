@@ -24,7 +24,7 @@ class Transactions:
                             ["getDistrict"], (d_id, w_id))
                 D = cur.fetchone()
                 cur.execute(self.stmts['NEW_ORDER']["incrementNextOrderId"],
-                            (D.d_next_o_id + 1, d_id, w_id))
+                            (D[1] + 1, d_id, w_id))
                 cur.execute(self.stmts['NEW_ORDER']
                             ["getCustomer"], (w_id, d_id, c_id))
                 C = cur.fetchone()
@@ -37,7 +37,7 @@ class Transactions:
         curr_dt = datetime.utcnow()
         with self.conn:
             with self.conn.cursor() as cur:
-                cur.execute(self.stmts["createOrder"], (D.d_next_o_id, d_id, w_id, c_id, curr_dt,
+                cur.execute(self.stmts["createOrder"], (D[1], d_id, w_id, c_id, curr_dt,
                                                         None, num_items, o_all_local))
 
         # init total amt
@@ -58,20 +58,20 @@ class Transactions:
                     cur.execute(self.stmts['NEW_ORDER']["getStockInfo"] % (d_id,),
                                 (curr_s_i_id, curr_s_wh_id))
                     S = cur.fetchone()
-                    adj_qty = S.s_quantity - curr_deci_qty
+                    adj_qty = S[0] - curr_deci_qty
 
                     if adj_qty < 10:
                         adj_qty = adj_qty + 100
 
                     if supplier_warehouse == w_id:
-                        cur.execute(self.stmts['NEW_ORDER']["updateStock"], (adj_qty, S.s_ytd + curr_deci_qty, S.s_order_cnt + 1,
-                                                                             w_id, curr_s_i_id))
+                        cur.execute(self.stmts['NEW_ORDER']["updateStock"], (adj_qty, S[2] + curr_deci_qty, S[3] + 1,
+                                                                             S[4], w_id, curr_s_i_id))
                     else:
-                        cur.execute(self.stmts['NEW_ORDER']["updateStock"], (adj_qty, S.s_ytd + curr_deci_qty, S.s_order_cnt + 1,
-                                                                             S.s_remote_cnt + 1, w_id, curr_s_i_id))
+                        cur.execute(self.stmts['NEW_ORDER']["updateStock"], (adj_qty, S[2] + curr_deci_qty, S[3] + 1,
+                                                                             S[4] + 1, w_id, curr_s_i_id))
 
             # get item table tables and compute required amounts
-            item_amt = curr_deci_qty * I.i_price
+            item_amt = curr_deci_qty * I[0]
             ttl_amt += item_amt
 
             # create new order-line
@@ -79,13 +79,13 @@ class Transactions:
             with self.conn:
                 with self.conn.cursor() as cur:
                     # for loop 0-based indexing, manually do i + 1 for OL_NUMBER 1-based indexing
-                    cur.execute(self.stmts['NEW_ORDER']["createOrderLine"], (D.d_next_o_id, d_id, w_id, i + 1, curr_s_i_id, curr_s_wh_id,
+                    cur.execute(self.stmts['NEW_ORDER']["createOrderLine"], (D[1], d_id, w_id, i + 1, curr_s_i_id, curr_s_wh_id,
                                                                              None, curr_deci_qty, item_amt, ol_dist_info))
 
             # get curent order item data
             item = {
                 'ITEM_NUMBER': curr_s_i_id,
-                'I_NAME': I.i_name,
+                'I_NAME': I[1],
                 'SUPPLIER_WAREHOUSE': curr_s_wh_id,
                 'QUANTITY': curr_deci_qty,
                 'OL_AMOUNT': item_amt,
@@ -95,13 +95,13 @@ class Transactions:
             items.append(item)
 
         # modify ttl_amt
-        ttl_amt = ttl_amt * (1 + W.w_tax + D.d_tax) * (1 - C.c_discount)
+        ttl_amt = ttl_amt * (1 + W[0] + D[0]) * (1 - C[0])
 
         print("New Order Transaction Output:")
         print(
-            f"Customer's identifier: ({C.c_w_id}, {C.c_d_id}, {C.c_id}), lastname: {C.c_last}, credit: {C.c_credit}, discount: {C.c_discount}")
-        print(f"Warehouse tax rate: {W.w_tax}, District tax rate: {D.d_tax}")
-        print(f"Order number: {D.d_next_o_id}, entry date: {curr_dt}")
+            f"Customer's identifier: ({w_id}, {d_id}, {c_id}), lastname: {C[1]}, credit: {C[2]}, discount: {C[0]}")
+        print(f"Warehouse tax rate: {W[0]}, District tax rate: {D[0]}")
+        print(f"Order number: {D[1]}, entry date: {curr_dt}")
         print(
             f"Number of items: {num_items}, total amount for order: {ttl_amt}")
         for item in items:
@@ -125,16 +125,16 @@ class Transactions:
                             (c_w_id, c_d_id, c_id))
                 O = cur.fetchone()
                 cur.execute(self.stmts["ORDER_STATUS"]["getOrderLines"],
-                            (c_w_id, c_d_id, O.o_id))
+                            (c_w_id, c_d_id, O[0]))
                 OL = cur.fetchall()
 
         print(f"Order-Status Transaction Output:")
-        print(f"Customer's name: ({C.c_first}, {C.c_middle}, {C.c_last})")
-        print(f"Customer's balance: {C.c_balance}")
+        print(f"Customer's name: ({C[1]}, {C[2]}, {C[3]})")
+        print(f"Customer's balance: {C[4]}")
         print(f"Customers last order:")
-        print(f"Order number: {O.o_id}")
-        print(f"Entry date and time: {O.o_entry_d}")
-        print(f"Carrier identifier: {O.o_carrier_id}")
+        print(f"Order number: {O[0]}")
+        print(f"Entry date and time: {O[2]}")
+        print(f"Carrier identifier: {O[1]}")
 
         # fetch each item in customer's last order
         if OL is not None:
