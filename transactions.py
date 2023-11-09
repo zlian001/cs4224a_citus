@@ -19,10 +19,10 @@ class Transactions:
         with self.conn:
             with self.conn.cursor() as cur:
 
-                cur.execute(self.stmts["updateWarehouseYtd"], (payment, c_w_id))
-                cur.execute(self.stmts["updateDistrictYtd"], (payment, c_w_id, c_d_id))
-                cur.execute(self.stmts["updateCustomerPayment"], (payment, payment, c_w_id, c_d_id, c_id))
-                cur.execute(self.stmts["getCustomerInfo"], (c_w_id, c_d_id, c_id))
+                cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]["updateWarehouseYtd"], (payment, c_w_id))
+                cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]["updateDistrictYtd"], (payment, c_w_id, c_d_id))
+                cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]["updateCustomerPayment"], (payment, payment, c_w_id, c_d_id, c_id))
+                cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]["getCustomerInfo"], (c_w_id, c_d_id, c_id))
                 customer_info = cur.fetchone()
                 print("Customer Info:", customer_info)
                 print("Payment Amount:", payment)
