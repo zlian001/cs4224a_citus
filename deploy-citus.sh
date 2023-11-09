@@ -54,3 +54,6 @@ if [ ${NODE} = "$COORD" ]; then
 fi
 
 echo $(logtime) "node ${NODE}: completed CITUS deployment"
+
+sleep 30
+wait
