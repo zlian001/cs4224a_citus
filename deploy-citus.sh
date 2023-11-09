@@ -37,7 +37,7 @@ if [[ ! -d "${LOGDIR}" ]]; then
 fi
 rm -rf /tmp/.s.PGSQL.5097.lock
 ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start &
-sleep 60
+sleep 30
 ${INSTALLDIR}/bin/psql -c "CREATE EXTENSION citus;"
 echo $(logtime) "node ${NODE}: $(ps -ef | grep postgres | grep -v grep)"
 
