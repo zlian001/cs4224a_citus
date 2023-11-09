@@ -54,7 +54,7 @@ fi
 # start CITUS cluster
 if $start_citus; then
     echo $(logtime) "starting CITUS cluster"
-    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnd[20-24] ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start &
+    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnd[20-24] ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start
     sleep 30
     echo $(logtime) "node ${NODE}: $(ps -ef | grep postgres | grep -v grep)"
     if [ ${NODE} = "$COORD" ]; then
