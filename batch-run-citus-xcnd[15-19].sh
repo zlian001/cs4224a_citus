@@ -22,6 +22,8 @@ COORD="xcnd15"
 WORKERS="xcnd16;xcnd17;xcnd18;xcnd19"
 CLUSTER_IPS="xcnd15,xcnd16,xcnd17,xcnd18,xcnd19"
 CLUSTER_NODES="xcnd[15-19]"
+PREFIX="xcnd"
+START_NODE=15
 NODE=$(hostname)
 
 # define tasks flags with default values
@@ -87,7 +89,7 @@ if $exec_transactions; then
 
     pids=()
     for i in {0..19}; do
-        server=xcnd$((45 + $i % 5))
+        server=${PREFIX}$((${START_NODE} + $i % 5))
         echo $(logtime) "client${i} executing ${i}.txt from ${server}"
         srun --nodes=1 --ntasks=1 --cpus-per-task=2 --nodelist=${server} python3 ${SCRIPTSDIR}/main-driver.py ${i} ${CLUSTER_IPS} ${RESULTSDIR} < ${XACTDIR}/${i}.txt 1> ${RESULTSDIR}/client${i}_xacts.log 2> ${RESULTSDIR}/client${i}_xact_metrics.log &
         pids+=($!)

@@ -4,7 +4,7 @@
 #SBATCH --time=03:00:00
 #SBATCH --output=/home/stuproj/cs4224a/cs4224a_citus/slurm_output/citus_batch-%j.out
 #SBATCH --error=/home/stuproj/cs4224a/cs4224a_citus/slurm_output/citus_batch-%j.err
-#SBATCH --nodelist=xcnd[45-49]
+#SBATCH --nodelist=xcnc[45-49]
 #SBATCH --mem-per-cpu=2G   # memory per CPU core
 #SBATCH --cpus-per-task=4 # CPUs per srun task
 
@@ -14,15 +14,15 @@ TEMPDIR='/temp/teama-data'
 LOGDIR=${HOME}/cs4224a_citus/logs
 LOGFILE=${LOGDIR}/citus-startup-${NODE}.log 2>&1
 XACTDIR='/temp/cs4224a/project_files/xact_files'
-RESULTSDIR=$HOME/cs4224a_citus/results
+RESULTSDIR=$HOME/cs4224a_citus/results-jem
 SCRIPTSDIR="$HOME/project_files/scripts"
 
 # CITUS node variables
-COORD="xcnd45"
-WORKERS="xcnd46;xcnd47;xcnd48;xcnd49"
-CLUSTER_IPS="xcnd45,xcnd46,xcnd47,xcnd48,xcnd49"
-CLUSTER_NODES="xcnd[45-49]"
-PREFIX="xcnd"
+COORD="xcnc45"
+WORKERS="xcnc46;xcnc47;xcnc48;xcnc49"
+CLUSTER_IPS="xcnc45,xcnc46,xcnc47,xcnc48,xcnc49"
+CLUSTER_NODES="xcnc[45-49]"
+PREFIX="xcnc"
 START_NODE=45
 NODE=$(hostname)
 
