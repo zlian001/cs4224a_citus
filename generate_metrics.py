@@ -1,4 +1,3 @@
-import json
 import sys
 import psycopg2
 
@@ -13,7 +12,7 @@ print(f"generate_metrics.py cluster node IPs: {CLUSTER_IPS}")
 conn = psycopg2.connect(
     database='project',
     user='cs4224a',
-    host='xcnd45,xcnd46,xcnd47,xcnd48,xcnd49'
+    host=CLUSTER_IPS
 )
 
 write_throughput_csv(RESULTS_DIR)
