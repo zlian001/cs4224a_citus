@@ -16,17 +16,6 @@ conn = psycopg2.connect(
     host='xcnd45,xcnd46,xcnd47,xcnd48,xcnd49'
 )
 
-with conn:
-    with conn.cursor() as cur:
-        cur.execute(self.stmts["getWarehouseTaxRate"], (w_id,))
-        W = cur.fetchone()
-        cur.execute(self.stmts["getDistrict"], (d_id, w_id))
-        D = cur.fetchone()
-        cur.execute(self.stmts["incrementNextOrderId"],
-                    (D.d_next_o_id + 1, d_id, w_id))
-        cur.execute(self.stmts["getCustomer"], (w_id, d_id, c_id))
-        C = cur.fetchone()
-
 write_throughput_csv(RESULTS_DIR)
 write_dbstate_csv(conn, RESULTS_DIR)
 
