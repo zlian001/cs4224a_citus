@@ -17,13 +17,16 @@ class Transactions:
         # get table values
         with self.conn:
             with self.conn.cursor() as cur:
-                cur.execute(self.stmts["getWarehouseTaxRate"], (w_id,))
+                cur.execute(self.stmts['NEW_ORDER']
+                            ["getWarehouseTaxRate"], (w_id,))
                 W = cur.fetchone()
-                cur.execute(self.stmts["getDistrict"], (d_id, w_id))
+                cur.execute(self.stmts['NEW_ORDER']
+                            ["getDistrict"], (d_id, w_id))
                 D = cur.fetchone()
-                cur.execute(self.stmts["incrementNextOrderId"],
+                cur.execute(self.stmts['NEW_ORDER']["incrementNextOrderId"],
                             (D.d_next_o_id + 1, d_id, w_id))
-                cur.execute(self.stmts["getCustomer"], (w_id, d_id, c_id))
+                cur.execute(self.stmts['NEW_ORDER']
+                            ["getCustomer"], (w_id, d_id, c_id))
                 C = cur.fetchone()
 
         # create new order
@@ -49,9 +52,10 @@ class Transactions:
             # update stock
             with self.conn:
                 with self.conn.cursor() as cur:
-                    cur.execute(self.stmts["getItemInfo"], (curr_s_i_id,))
+                    cur.execute(self.stmts['NEW_ORDER']
+                                ["getItemInfo"], (curr_s_i_id,))
                     I = cur.fetchone()
-                    cur.execute(self.stmts["getStockInfo"] % (d_id,),
+                    cur.execute(self.stmts['NEW_ORDER']["getStockInfo"] % (d_id,),
                                 (curr_s_i_id, curr_s_wh_id))
                     S = cur.fetchone()
                     adj_qty = S.s_quantity - curr_deci_qty
@@ -60,11 +64,11 @@ class Transactions:
                         adj_qty = adj_qty + 100
 
                     if supplier_warehouse == w_id:
-                        cur.execute(self.stmts["updateStock"], (adj_qty, S.s_ytd + curr_deci_qty, S.s_order_cnt + 1,
-                                                                w_id, curr_s_i_id))
+                        cur.execute(self.stmts['NEW_ORDER']["updateStock"], (adj_qty, S.s_ytd + curr_deci_qty, S.s_order_cnt + 1,
+                                                                             w_id, curr_s_i_id))
                     else:
-                        cur.execute(self.stmts["updateStock"], (adj_qty, S.s_ytd + curr_deci_qty, S.s_order_cnt + 1,
-                                                                S.s_remote_cnt + 1, w_id, curr_s_i_id))
+                        cur.execute(self.stmts['NEW_ORDER']["updateStock"], (adj_qty, S.s_ytd + curr_deci_qty, S.s_order_cnt + 1,
+                                                                             S.s_remote_cnt + 1, w_id, curr_s_i_id))
 
             # get item table tables and compute required amounts
             item_amt = curr_deci_qty * I.i_price
@@ -75,8 +79,8 @@ class Transactions:
             with self.conn:
                 with self.conn.cursor() as cur:
                     # for loop 0-based indexing, manually do i + 1 for OL_NUMBER 1-based indexing
-                    cur.execute(self.stmts["createOrderLine"], (D.d_next_o_id, d_id, w_id, i + 1, curr_s_i_id, curr_s_wh_id,
-                                                                None, curr_deci_qty, item_amt, ol_dist_info))
+                    cur.execute(self.stmts['NEW_ORDER']["createOrderLine"], (D.d_next_o_id, d_id, w_id, i + 1, curr_s_i_id, curr_s_wh_id,
+                                                                             None, curr_deci_qty, item_amt, ol_dist_info))
 
             # get curent order item data
             item = {
@@ -114,13 +118,13 @@ class Transactions:
         # get customer's last order
         with self.conn:
             with self.conn.cursor() as cur:
-                cur.execute(self.stmts["getCustomerByCustomerId"],
+                cur.execute(self.stmts["ORDER_STATUS"]["getCustomerByCustomerId"],
                             (c_w_id, c_d_id, c_id))
                 C = cur.fetchone()
-                cur.execute(self.stmts["getLastOrder"],
+                cur.execute(self.stmts["ORDER_STATUS"]["getLastOrder"],
                             (c_w_id, c_d_id, c_id))
                 O = cur.fetchone()
-                cur.execute(self.stmts["getOrderLines"],
+                cur.execute(self.stmts["ORDER_STATUS"]["getOrderLines"],
                             (c_w_id, c_d_id, O.o_id))
                 OL = cur.fetchall()
 
@@ -149,7 +153,7 @@ class Transactions:
         # get next available order number
         with self.conn:
             with self.conn.cursor() as cur:
-                cur.execute(self.stmts["getOId"], (w_id, d_id))
+                cur.execute(self.stmts['STOCK_LEVEL']["getOId"], (w_id, d_id))
                 N = cur.fetchone()
 
         # get range of order number to query
@@ -158,7 +162,7 @@ class Transactions:
         # get list of item ids that falls within range of N-L
         with self.conn:
             with self.conn.cursor() as cur:
-                cur.execute(self.stmts["getStockCount"],
+                cur.execute(self.stmts['STOCK_LEVEL']["getStockCount"],
                             (w_id, d_id, N, order_no_range, w_id, T))
                 no = cur.fetchone()
 
