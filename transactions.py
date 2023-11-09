@@ -140,9 +140,8 @@ class Transactions:
         if OL is not None:
             for i, row in enumerate(OL, start=1):
                 print(f"item_{i}:")
-                for col in row._fields:
-                    val = getattr(row, col)
-                    print(f"{col}: {val}")
+                for col in row:
+                    print(f"{col}")
 
         return
 
