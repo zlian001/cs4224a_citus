@@ -36,11 +36,11 @@ if [[ ! -d "${LOGDIR}" ]]; then
     mkdir -p "${LOGDIR}"
 fi
 ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start &
+sleep 60
 ${INSTALLDIR}/bin/psql -c "CREATE EXTENSION citus;"
 echo $(logtime) "node ${NODE}: $(ps -ef | grep postgres | grep -v grep)"
 
 # coordinator node only
-sleep 60
 createdb $PGDATABASE
 if [ ${NODE} = "$COORD" ]; then
     # register the hostname that future workers will use to connect to the coordinator node
