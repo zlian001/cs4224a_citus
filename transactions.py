@@ -157,16 +157,16 @@ class Transactions:
                 N = cur.fetchone()
 
         # get range of order number to query
-        order_no_range = N - L
+        order_no_range = N[0] - L
 
         # get list of item ids that falls within range of N-L
         with self.conn:
             with self.conn.cursor() as cur:
                 cur.execute(self.stmts['STOCK_LEVEL']["getStockCount"],
-                            (w_id, d_id, N, order_no_range, w_id, T))
+                            (w_id, d_id, N[0], order_no_range, w_id, T))
                 no = cur.fetchone()
 
-        print(f"No. of item numbers found: {no}")
+        print(f"No. of item numbers found: {no[0]}")
 
         return
 
