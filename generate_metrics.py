@@ -11,9 +11,9 @@ print(f"generate_metrics.py cluster node IPs: {CLUSTER_IPS}")
 
 # Define an execution profile for consistency level
 conn = psycopg2.connect(
-    database=db,
-    user=user,
-    host=host
+    database='project',
+    user='cs4224a',
+    host='xcnd45,xcnd46,xcnd47,xcnd48,xcnd49'
 )
 
 with conn:
