@@ -72,10 +72,12 @@ class Transactions:
     def related_customer_txn(self, c_w_id, c_d_id, c_id):
         print(f"Related Customers Transaction Output for warehouse id {c_w_id}, district id {c_d_id}, customer id {c_id}:")
 
+        query = self.stmts["RELATED_CUSTOMER_TXN_QUERIES"]["findRelatedCustomers"]
+
         with self.conn:
             with self.conn.cursor() as cur:
-                cur.execute(self.stmts["RELATED_CUSTOMER_TXN_QUERIES"]["findRelatedCustomers"],
-                            (c_id, c_w_id, c_id, c_d_id, c_w_id))
+                # The order of parameters here should match the placeholders in the SQL query.
+                cur.execute(query, (c_id, c_d_id, c_w_id, c_w_id))
                 related_customers = cur.fetchall()
 
         for related_customer in related_customers:

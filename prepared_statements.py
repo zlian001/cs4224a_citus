@@ -49,21 +49,35 @@ TXN_QUERIES = {
     },
     "RELATED_CUSTOMER_TXN_QUERIES": {
         "findRelatedCustomers": """
-        SELECT DISTINCT c2.c_w_id, c2.c_d_id, c2.c_id
-        FROM customer_order o
-        JOIN order_line ol ON o.o_id = ol.ol_o_id AND o.o_d_id = ol.ol_d_id AND o.o_w_id = ol.ol_w_id
-        JOIN (
-            SELECT ol2.ol_i_id
-            FROM order_line ol2
-            JOIN customer_order o2 ON ol2.ol_o_id = o2.o_id AND ol2.ol_d_id = o2.o_d_id AND ol2.ol_w_id = o2.o_w_id
-            WHERE o2.o_c_id != %s
-        ) as item_common ON ol.ol_i_id = item_common.ol_i_id
-        JOIN customer_order co ON item_common.ol_i_id = ol.ol_i_id AND co.o_w_id != %s
-        JOIN customer c2 ON co.o_c_id = c2.c_id AND co.o_d_id = c2.c_d_id AND co.o_w_id = c2.c_w_id
-        WHERE o.o_c_id = %s AND o.o_d_id = %s AND o.o_w_id = %s
-        GROUP BY c2.c_w_id, c2.c_d_id, c2.c_id
-        HAVING COUNT(DISTINCT ol.ol_i_id) >= 2;
+    WITH selected_customer_orders AS (
+        SELECT o_id
+        FROM customer_order
+        WHERE o_c_id = %s AND o_d_id = %s AND o_w_id = %s
+    ),
+    common_items AS (
+        SELECT ol_i_id
+        FROM order_line
+        WHERE (ol_o_id, ol_d_id, ol_w_id) IN (SELECT o_id, o_d_id, o_w_id FROM selected_customer_orders)
+        GROUP BY ol_i_id
+        HAVING COUNT(ol_i_id) > 1
+    ),
+    related_orders AS (
+        SELECT o.o_c_id, o.o_w_id, o.o_d_id
+        FROM order_line ol
+        INNER JOIN common_items ci ON ol.ol_i_id = ci.ol_i_id
+        INNER JOIN customer_order o ON ol.ol_o_id = o.o_id AND ol.ol_d_id = o.o_d_id AND ol.ol_w_id = o.o_w_id
+        WHERE o.o_w_id != %s
+        GROUP BY o.o_c_id, o.o_w_id, o.o_d_id
+    ),
+    related_customers AS (
+        SELECT c.c_id, c.c_w_id, c.c_d_id
+        FROM customer c
+        INNER JOIN related_orders ro ON c.c_id = ro.o_c_id AND c.c_w_id = ro.o_w_id AND c.c_d_id = ro.o_d_id
+    )
+    SELECT DISTINCT rc.c_w_id, rc.c_d_id, rc.c_id
+    FROM related_customers rc;
     """
     }
+
 
 }
