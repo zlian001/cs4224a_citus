@@ -37,8 +37,8 @@ class Transactions:
         curr_dt = datetime.utcnow()
         with self.conn:
             with self.conn.cursor() as cur:
-                cur.execute(self.stmts["createOrder"], (D[1], d_id, w_id, c_id, curr_dt,
-                                                        None, num_items, o_all_local))
+                cur.execute(self.stmts['NEW_ORDER']["createOrder"], (D[1], d_id, w_id, c_id, curr_dt,
+                                                                     None, num_items, o_all_local))
 
         # init total amt
         ttl_amt = Decimal(0)
