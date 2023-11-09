@@ -15,7 +15,7 @@ class Transactions:
         )
 
     #payment transaction 2.2
-    def process_payment(self, c_w_id, c_d_id, c_id, payment):
+    def payment_txn(self, c_w_id, c_d_id, c_id, payment):
         with self.conn:
             with self.conn.cursor() as cur:
 
@@ -33,7 +33,7 @@ class Transactions:
 
 
     #delivery txn 2.3
-    def process_deliveries(self, W_ID, CARRIER_ID):
+    def delivery_txn(self, W_ID, CARRIER_ID):
         with self.conn:
             with self.conn.cursor() as cur:
                 for DISTRICT_NO in range(1, 11):
@@ -52,7 +52,7 @@ class Transactions:
         return
 
     #top-balance transcations 2.7
-    def get_top_customers_with_balances(self):
+    def top_balance_txn(self):
         print("Top Balance Transaction Output:")
 
         with self.conn:
