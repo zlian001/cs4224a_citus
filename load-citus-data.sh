@@ -18,17 +18,20 @@ if [ ${NODE} = "$COORD" ]; then
     # convert 'null' strings to empty field `,,`
     sed 's/,null,/,,/' ${DATADIR}/order-line.csv > ${DATADIR}/order-line_null.csv
 
-    # ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('warehouse', 'w_id');"
-    # ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('district', 'd_w_id');"
-    # ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('customer', 'c_w_id');"
-    # ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('customer_order', 'o_w_id');"
-    # ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_reference_table('item');"
-    # ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('order_line', 'ol_w_id');"
-    # ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('stock', 's_w_id');"
+    echo $(logtime) "node ${NODE}: distributing tables"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('warehouse', 'w_id');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('district', 'd_w_id');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('customer', 'c_w_id');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('customer_order', 'o_w_id');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_reference_table('item');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('order_line', 'ol_w_id');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('stock', 's_w_id');"
 
-    # ALTER TABLE order_line ADD FOREIGN KEY (OL_I_ID) REFERENCES item(I_ID);
-    # ALTER TABLE stock ADD FOREIGN KEY (S_I_ID) REFERENCES item(I_ID);
+    echo $(logtime) "node ${NODE}: creating foreign keys" # can only do so after distribution
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "ALTER TABLE order_line ADD FOREIGN KEY (OL_I_ID) REFERENCES item(I_ID);"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "ALTER TABLE stock ADD FOREIGN KEY (S_I_ID) REFERENCES item(I_ID);"
 
+    echo $(logtime) "node ${NODE}: loading data"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy WAREHOUSE from "${DATADIR}/warehouse.csv" with csv"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy DISTRICT from "${DATADIR}/district.csv" with csv"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy CUSTOMER from "${DATADIR}/customer.csv" with csv"
@@ -36,5 +39,4 @@ if [ ${NODE} = "$COORD" ]; then
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy ITEM from "${DATADIR}/item.csv" with csv"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy ORDER_LINE from "${DATADIR}/order-line_null.csv" with csv"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "\copy STOCK from "${DATADIR}/stock.csv" with csv"
-    echo $(logtime) "loaded data"
 fi

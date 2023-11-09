@@ -21,6 +21,8 @@ if [ ! -d ${TEMPDIR} ]; then
     source ${SCRIPTSDIR}/install-citus.sh
     source ${SCRIPTSDIR}/init-citus-db.sh
     createdb $PGDATABASE
+
+    echo $(logtime) "node ${NODE}: configuring CITUS"
     echo "listen_addresses = '*'" >> ${TEMPDIR}/postgresql.conf
     echo "host    all             all             $(nslookup $COORD | awk '/^Address: / { print $2 }')/32              trust" >> ${TEMPDIR}/pg_hba.conf
     for i in "${my_array[@]}"; do
@@ -34,9 +36,10 @@ if [[ ! -d "${LOGDIR}" ]]; then
     echo $(logtime) "node ${NODE}: creating ${LOGDIR}"
     mkdir -p "${LOGDIR}"
 fi
-${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start
+${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start &
 ${INSTALLDIR}/bin/psql -c "CREATE EXTENSION citus;"
 echo $(logtime) "node ${NODE}: $(ps -ef | grep postgres | grep -v grep)"
+
 # coordinator node only
 sleep 60
 if [ ${NODE} = "$COORD" ]; then

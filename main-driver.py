@@ -10,11 +10,6 @@ client_number = int(sys.argv[1])
 CLUSTER_IPS = json.loads(sys.argv[2])
 print(f"python main driver cluster node IPs: {CLUSTER_IPS}")
 
-if CLUSTER_IPS[0] != "127.0.0.1":
-    RESULTS_DIR = "/home/stuproj/cs4224a/cs4224a_cassandra/results"
-else:
-    RESULTS_DIR = "/temp/cs4224a/results"
-
 # create an instance of the Transaction class
 xact = Transactions("project", "cs4224a", CLUSTER_IPS)
 
