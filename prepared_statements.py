@@ -141,7 +141,7 @@ TXN_QUERIES = {
             ),
 
             popular_items AS (
-                SELECT OL.O_ID, OL.OL_I_ID, I.I_NAME, OL.OL_QUANTITY
+                SELECT OL.OL_O_ID, OL.OL_I_ID, I.I_NAME, OL.OL_QUANTITY
                 FROM order_line OL
                 JOIN item I ON OL.OL_I_ID = I.I_ID
                 WHERE (OL.OL_W_ID, OL.OL_D_ID, OL.O_ID) IN (SELECT O_W_ID, O_D_ID, O_ID FROM last_l_orders)
