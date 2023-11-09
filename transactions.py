@@ -56,7 +56,7 @@ class Transactions:
                                 ["getItemInfo"], (curr_s_i_id,))
                     I = cur.fetchone()
                     cur.execute(self.stmts['NEW_ORDER']["getStockInfo"],
-                                (d_id, curr_s_i_id, curr_s_wh_id))
+                                (d_id:02d, curr_s_i_id, curr_s_wh_id))
                     S = cur.fetchone()
                     adj_qty = S[0] - curr_deci_qty
 
