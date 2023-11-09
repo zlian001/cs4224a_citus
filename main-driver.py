@@ -16,13 +16,13 @@ xact = Transactions("project", "cs4224a", CLUSTER_IPS)
 # mapping for transaction functions
 txn_funcs_dict = {
     "N": (xact.new_order_txn, xact.cast_new_order_dtypes),
-    # "P": (xact.payment_txn, xact.cast_payment_dtypes),
-    # "D": (xact.delivery_txn, xact.cast_delivery_dtypes),
+    "P": (xact.payment_txn, xact.cast_payment_dtypes),
+    "D": (xact.delivery_txn, xact.cast_delivery_dtypes),
     "O": (xact.order_status_txn, xact.cast_order_status_dtypes),
-    "S": (xact.stock_level_txn, xact.cast_stock_level_dtypes)
+    "S": (xact.stock_level_txn, xact.cast_stock_level_dtypes),
     # "I": (xact.popular_item_txn, xact.cast_popular_item_dtypes),
-    # "T": (xact.top_balance_txn, xact.cast_top_balance_dtypes),
-    # "R": (xact.related_customer_txn, xact.cast_related_customer_dtypes),
+    "T": (xact.top_balance_txn, xact.cast_top_balance_dtypes),
+    "R": (xact.related_customer_txn, xact.cast_related_customer_dtypes)
 }
 
 total_num_exec_xacts = 0
