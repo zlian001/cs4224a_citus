@@ -37,8 +37,8 @@ for line in sys.stdin:
     # get correct transaction function and parameter data type conversion function from dict
     txn_type = params[0]
     # TODO: remove this test txn_type condition for PROD
-    # if txn_type not in ["I"]:
-    #    continue
+    if txn_type not in ["N", "O", "S"]:
+        continue
     txn_func, txn_dtypes_func = txn_funcs_dict[txn_type]
 
     # convert parameters to correct data types
