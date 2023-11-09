@@ -133,7 +133,7 @@ TXN_QUERIES = {
             ),
 
             last_l_orders AS (
-                SELECT O_ID, O_ENTRY_D, O_C_ID
+                SELECT O_ID, O_ENTRY_D, O_C_ID, O_W_ID
                 FROM customer_order
                 WHERE O_W_ID = %s AND O_D_ID = %s AND O_ID < (SELECT D_NEXT_O_ID FROM district_next_order) AND O_ID >= (SELECT D_NEXT_O_ID - %s FROM district_next_order)
                 ORDER BY O_ID DESC
