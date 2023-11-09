@@ -50,10 +50,11 @@ TXN_QUERIES = {
     "RELATED_CUSTOMER_TXN_QUERIES": {
         "findRelatedCustomers": """
     WITH selected_customer_orders AS (
-        SELECT o_id
+        SELECT o_id, o_d_id, o_w_id
         FROM customer_order
         WHERE o_c_id = %s AND o_d_id = %s AND o_w_id = %s
     ),
+
     common_items AS (
         SELECT ol_i_id
         FROM order_line
@@ -61,6 +62,7 @@ TXN_QUERIES = {
         GROUP BY ol_i_id
         HAVING COUNT(ol_i_id) > 1
     ),
+
     related_orders AS (
         SELECT o.o_c_id, o.o_w_id, o.o_d_id
         FROM order_line ol
