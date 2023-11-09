@@ -116,5 +116,58 @@ TXN_QUERIES = {
     SELECT DISTINCT rc.c_w_id, rc.c_d_id, rc.c_id
     FROM related_customers rc;
     """
+    },
+    "POPULAR_ITEM_TXN_QUERIES": {
+        "findPopularItems": """
+        WITH district_next_order AS (
+            SELECT D_NEXT_O_ID
+            FROM district
+            WHERE D_W_ID = %s AND D_ID = %s
+        ),
+        last_l_orders AS (
+            SELECT O_ID, O_ENTRY_D, O_C_ID
+            FROM customer_order
+            WHERE O_W_ID = %s AND O_D_ID = %s AND O_ID < (SELECT D_NEXT_O_ID FROM district_next_order) AND O_ID >= (SELECT D_NEXT_O_ID - %s FROM district_next_order)
+            ORDER BY O_ID DESC
+            LIMIT %s
+        ),
+        popular_items AS (
+            SELECT OL.O_ID, OL.OL_I_ID, I.I_NAME, OL.OL_QUANTITY
+            FROM order_line OL
+            JOIN item I ON OL.OL_I_ID = I.I_ID
+            WHERE (OL.OL_W_ID, OL.OL_D_ID, OL.O_ID) IN (SELECT O_W_ID, O_D_ID, O_ID FROM last_l_orders)
+        ),
+        max_quantity_items AS (
+            SELECT O_ID, OL_I_ID, I_NAME, OL_QUANTITY
+            FROM popular_items
+            WHERE (O_ID, OL_QUANTITY) IN (
+                SELECT O_ID, MAX(OL_QUANTITY)
+                FROM popular_items
+                GROUP BY O_ID
+            )
+        ),
+        item_popularity AS (
+            SELECT I_NAME, COUNT(DISTINCT O_ID)::FLOAT / %s * 100 AS popularity_percentage
+            FROM max_quantity_items
+            GROUP BY I_NAME
+        ),
+        detailed_orders AS (
+            SELECT
+                LLO.O_ID,
+                LLO.O_ENTRY_D,
+                C.C_FIRST,
+                C.C_MIDDLE,
+                C.C_LAST,
+                MQI.I_NAME,
+                MQI.OL_QUANTITY,
+                IP.popularity_percentage
+            FROM
+                last_l_orders LLO
+            JOIN customer C ON LLO.O_C_ID = C.C_ID
+            JOIN max_quantity_items MQI ON LLO.O_ID = MQI.O_ID
+            JOIN item_popularity IP ON MQI.I_NAME = IP.I_NAME
+        )
+        SELECT * FROM detailed_orders;
+        """
     }
 }
