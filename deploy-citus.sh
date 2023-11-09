@@ -40,7 +40,7 @@ rm -rf /tmp/.s.PGSQL.5097.lock
 ${INSTALLDIR}/bin/postgres -D ${TEMPDIR} &
 sleep 30
 createdb $PGDATABASE
-${INSTALLDIR}/bin/psql -c "CREATE EXTENSION citus;"
+${INSTALLDIR}/bin/psql -U $PGUSER -d $PGDATABASE -c "CREATE EXTENSION citus;"
 echo $(logtime) "node ${NODE}: $(ps -ef | grep postgres | grep -v grep)"
 
 # coordinator node only
