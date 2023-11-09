@@ -5,9 +5,9 @@ import psycopg2
 from metrics import write_dbstate_csv, write_throughput_csv
 
 # get cmdline args
-print(f"generate_metrics.py cluster node IPs: {CLUSTER_IPS}")
 CLUSTER_IPS = json.loads(sys.argv[1])
 RESULTS_DIR = sys.argv[2]
+print(f"generate_metrics.py cluster node IPs: {CLUSTER_IPS}")
 
 # Define an execution profile for consistency level
 conn = psycopg2.connect(
