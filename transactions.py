@@ -48,7 +48,7 @@ class Transactions:
 
                         cur.execute(self.stmts["DELIVERY_QUERIES"]["updateCustomerBalanceAndDeliveryCount"], (N, W_ID, DISTRICT_NO, N, W_ID, DISTRICT_NO))
 
-            self.conn.commit()
+            #self.conn.commit()
         return
 
     #top-balance transcations 2.7

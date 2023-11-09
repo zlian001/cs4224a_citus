@@ -102,8 +102,8 @@ if $exec_transactions; then
     done
 
     # generate performance metrics from xcnd45
-    echo $(logtime) "writing performance metrics to csv files"
-    srun --nodes=1 --ntasks=1 --cpus-per-task=2 --nodelist=xcnd45 python3 ${SCRIPTSDIR}/generate_metrics.py ${CLUSTER_IPS} ${RESULTSDIR}
+    #echo $(logtime) "writing performance metrics to csv files"
+    #srun --nodes=1 --ntasks=1 --cpus-per-task=2 --nodelist=xcnd45 python3 ${SCRIPTSDIR}/generate_metrics.py ${CLUSTER_IPS} ${RESULTSDIR}
 fi
 
 # gracefully kill CITUS after Xact experiment tasks exits
