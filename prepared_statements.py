@@ -158,7 +158,7 @@ TXN_QUERIES = {
             ),
 
             item_popularity AS (
-                SELECT I_NAME, COUNT(DISTINCT O_ID)::FLOAT / %s * 100 AS popularity_percentage
+                SELECT I_NAME, COUNT(DISTINCT OL_O_ID)::FLOAT / %s * 100 AS popularity_percentage
                 FROM max_quantity_items
                 GROUP BY I_NAME
             )
