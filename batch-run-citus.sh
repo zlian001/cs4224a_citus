@@ -87,7 +87,7 @@ if $exec_transactions; then
     for i in {0..19}; do
         server=xcnd$((45 + $i % 5))
         echo $(logtime) "client${i} executing ${i}.txt from ${server}"
-        srun --nodes=1 --ntasks=1 --cpus-per-task=2 --nodelist=${server} python3 ${SCRIPTSDIR}/main_driver.py ${i} ${CLUSTER_IPS} < ${XACTDIR}/${i}.txt 1> ${RESULTSDIR}/client${i}_xacts.log 2> ${RESULTSDIR}/client${i}_xact_metrics.log &
+        srun --nodes=1 --ntasks=1 --cpus-per-task=2 --nodelist=${server} python3 ${SCRIPTSDIR}/main-driver.py ${i} ${CLUSTER_IPS} < ${XACTDIR}/${i}.txt 1> ${RESULTSDIR}/client${i}_xacts.log 2> ${RESULTSDIR}/client${i}_xact_metrics.log &
         pids+=($!)
     done
     
