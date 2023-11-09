@@ -7,7 +7,7 @@ from transactions import *
 
 # get cmdline args
 client_number = int(sys.argv[1])
-CLUSTER_IPS = json.loads(sys.argv[2])
+CLUSTER_IPS = sys.argv[2]
 RESULTSDIR = '/home/stuproj/cs4224a/cs4224a_cassandra/results'
 print(f"python main driver cluster node IPs: {CLUSTER_IPS}")
 
