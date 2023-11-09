@@ -84,7 +84,8 @@ class Transactions:
         return
 
     # define the datatypes for each transaction
-
+    def cast_payment_dtypes(self, params):
+        return  [int(params[0]), int(params[1]), int(params[2]), float(params[3])]
     def cast_delivery_dtypes(self, params):
         return [int(params[0]), int(params[1])]
 
