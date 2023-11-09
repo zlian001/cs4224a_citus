@@ -14,14 +14,14 @@ TEMPDIR='/temp/teama-data'
 LOGDIR=${HOME}/cs4224a_citus/logs
 LOGFILE=${LOGDIR}/citus-startup-${NODE}.log 2>&1
 XACTDIR='/temp/cs4224a/project_files/xact_files'
-# RESULTSDIR=$HOME/cs4224a_citus/results
-RESULTSDIR=$HOME/cs4224a_citus/results_jem
+RESULTSDIR=$HOME/cs4224a_citus/results
 SCRIPTSDIR="$HOME/project_files/scripts"
 
 # CITUS node variables
 COORD="xcnd15"
 WORKERS="xcnd16;xcnd17;xcnd18;xcnd19"
 CLUSTER_IPS="xcnd15,xcnd16,xcnd17,xcnd18,xcnd19"
+CLUSTER_NODES="xcnd[15-19]"
 NODE=$(hostname)
 
 # define tasks flags with default values
@@ -47,7 +47,7 @@ done
 # deploy CITUS and project files
 if $deploy_citus; then
     echo $(logtime) "deploying CITUS cluster"
-    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnd[15-19] ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
+    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=${CLUSTER_NODES} ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
     srun cp -rp $HOME/project_files /temp/cs4224a/
     echo $(logtime) "copied project data and xact files to nodes"
 fi
@@ -55,7 +55,8 @@ fi
 # start CITUS cluster
 if $start_citus; then
     echo $(logtime) "starting CITUS cluster"
-    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnd[15-19] ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start &
+    #srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnd[45-49] ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start &
+    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=${CLUSTER_NODES} ${INSTALLDIR}/bin/postgres -D ${TEMPDIR} &
     sleep 60
     echo $(logtime) "node ${NODE}: $(ps -ef | grep postgres | grep -v grep)"
     if [ ${NODE} = "$COORD" ]; then
@@ -67,7 +68,7 @@ fi
 # creating schemas and loading data from COORD node
 if $load_data; then
     echo $(logtime) "creating table schemas and loading data using ${COORD}"
-    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnd[15-19] ${SCRIPTSDIR}/load-citus-data.sh ${COORD} &
+    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=${CLUSTER_NODES} ${SCRIPTSDIR}/load-citus-data.sh ${COORD} &
 fi
 
 # execute transactions
@@ -86,9 +87,9 @@ if $exec_transactions; then
 
     pids=()
     for i in {0..19}; do
-        server=xcnd$((15 + $i % 5))
+        server=xcnd$((45 + $i % 5))
         echo $(logtime) "client${i} executing ${i}.txt from ${server}"
-        srun --nodes=1 --ntasks=1 --cpus-per-task=2 --nodelist=${server} python3 ${SCRIPTSDIR}/main-driver.py ${i} ${CLUSTER_IPS} < ${XACTDIR}/${i}.txt 1> ${RESULTSDIR}/client${i}_xacts.log 2> ${RESULTSDIR}/client${i}_xact_metrics.log &
+        srun --nodes=1 --ntasks=1 --cpus-per-task=2 --nodelist=${server} python3 ${SCRIPTSDIR}/main-driver.py ${i} ${CLUSTER_IPS} ${RESULTSDIR} < ${XACTDIR}/${i}.txt 1> ${RESULTSDIR}/client${i}_xacts.log 2> ${RESULTSDIR}/client${i}_xact_metrics.log &
         pids+=($!)
     done
     
@@ -102,13 +103,13 @@ if $exec_transactions; then
         wait $pid
     done
 
-    # generate performance metrics from xcnd15
+    # generate performance metrics from xcnd45
     echo $(logtime) "writing performance metrics to csv files"
-    srun --nodes=1 --ntasks=1 --cpus-per-task=2 --nodelist=xcnd15 python3 ${SCRIPTSDIR}/generate_metrics.py ${CLUSTER_IPS} ${RESULTSDIR}
+    srun --nodes=1 --ntasks=1 --cpus-per-task=2 --nodelist=${COORD} python3 ${SCRIPTSDIR}/generate_metrics.py ${CLUSTER_IPS} ${RESULTSDIR}
 fi
 
 # gracefully kill CITUS after Xact experiment tasks exits
 echo $(logtime) "stopping all CITUS nodes"
-#srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnd[15-19] ${INSTALLDIR}/bin/pg_ctl stop
-sleep 3600
+srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=${CLUSTER_NODES} ${INSTALLDIR}/bin/pg_ctl stop
+rm -rf ${TEMPDIR}
 wait
