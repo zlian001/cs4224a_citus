@@ -49,7 +49,7 @@ done
 # deploy CITUS and project files
 if $deploy_citus; then
     echo $(logtime) "deploying CITUS cluster"
-    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=${CLUSTER_NODES} ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
+    srun --overlap --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=${CLUSTER_NODES} ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
     srun cp -rp $HOME/project_files /temp/cs4224a/
     echo $(logtime) "copied project data and xact files to nodes"
 fi
@@ -113,5 +113,5 @@ fi
 # gracefully kill CITUS after Xact experiment tasks exits
 echo $(logtime) "stopping all CITUS nodes"
 srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=${CLUSTER_NODES} ${INSTALLDIR}/bin/pg_ctl stop
-rm -rf ${TEMPDIR}
+#rm -rf ${TEMPDIR}
 wait
