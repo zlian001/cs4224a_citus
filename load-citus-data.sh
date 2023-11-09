@@ -9,7 +9,7 @@ logtime() {
     date +"%Y-%m-%dT%H:%M:%S:%3N -- "
 }
 
-# ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -f ${SCRIPTSDIR}/schema.sql
+${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -f ${SCRIPTSDIR}/schema.sql
 echo $(logtime) "created table schemas"
 if [ ${NODE} = "$COORD" ]; then
     echo $(logtime) "node ${NODE}: converting null strings to empty fields in data files" 
