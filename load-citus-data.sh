@@ -10,10 +10,10 @@ logtime() {
 }
 
 echo $(logtime) "created table schemas"
-if [ [ ${NODE} == "$COORD" ] ]; then
+if [ ${NODE} == "$COORD" ]; then
     echo $(logtime) "node ${NODE}: creating tables"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -f ${SCRIPTSDIR}/schema.sql
-    
+
     echo $(logtime) "node ${NODE}: converting null strings to empty fields in data files" 
     # convert 'null' string data to -1 int value so cql query can query empty O_CARRIER_ID value
     sed 's/,null,/,-1,/' ${DATADIR}/order.csv > ${DATADIR}/order_null.csv
