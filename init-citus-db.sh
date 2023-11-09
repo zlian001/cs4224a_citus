@@ -11,6 +11,7 @@ DATADIR=/temp/team${TEAM_ID}-data
 
 
 mkdir -p ${DATADIR}
+echo "FUCKKKKKKKK YOUUUUUUU"
 ${INSTALLDIR}/bin/initdb -D ${DATADIR}
 if ! grep -q "citus" ${DATADIR}/postgresql.conf; then
 	echo "shared_preload_libraries = 'citus'" >> ${DATADIR}/postgresql.conf
