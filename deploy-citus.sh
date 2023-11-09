@@ -35,6 +35,7 @@ if [[ ! -d "${LOGDIR}" ]]; then
     echo $(logtime) "node ${NODE}: creating ${LOGDIR}"
     mkdir -p "${LOGDIR}"
 fi
+rm -rf /tmp/.s.PGSQL.5097.lock
 ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start &
 sleep 60
 ${INSTALLDIR}/bin/psql -c "CREATE EXTENSION citus;"
