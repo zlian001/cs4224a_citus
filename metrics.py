@@ -99,13 +99,17 @@ def write_dbstate_csv(session, results_dir):
 
     with open(f"{results_dir}/dbstate.csv", "w") as fdbstate:
         print(f"writing dbstate metrics to {results_dir}/dbstate.csv")
-        for query in queries:
-            start_time = time.time()
-            rows = session.execute(query)
-            end_time = time.time()
-            print(
-                f"Query '{query}' took {end_time - start_time} seconds to execute.")
-            for row in rows:
-                for col in row._fields:
-                    val = getattr(row, col)
-                    fdbstate.write(f"{col}: {val}" + "\n")
+        with session:
+            with session.cursor() as cur:
+                for query in queries:
+                    start_time = time.time()
+                    rows = session.execute(query)
+                    cur.execute(query)
+                    rows = cur.fetchall()
+                    end_time = time.time()
+                    print(
+                        f"Query '{query}' took {end_time - start_time} seconds to execute.")
+                    for row in rows:
+                        for col in row._fields:
+                            val = getattr(row, col)
+                            fdbstate.write(f"{col}: {val}" + "\n")

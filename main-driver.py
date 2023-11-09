@@ -8,6 +8,7 @@ from transactions import *
 # get cmdline args
 client_number = int(sys.argv[1])
 CLUSTER_IPS = json.loads(sys.argv[2])
+RESULTSDIR = '/home/stuproj/cs4224a/cs4224a_cassandra/results'
 print(f"python main driver cluster node IPs: {CLUSTER_IPS}")
 
 # create an instance of the Transaction class
@@ -75,7 +76,7 @@ for line in sys.stdin:
 # compute metrics and write to require csv files
 metrics_tuple = compute_perf_metrics(
     total_num_exec_xacts, total_exec_time, latencies)
-write_client_csv(RESULTS_DIR, client_number, metrics_tuple)
+write_client_csv(RESULTSDIR, client_number, metrics_tuple)
 
 # close CITUS cluster connections
 xact.close()
