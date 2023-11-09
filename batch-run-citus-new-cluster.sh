@@ -55,7 +55,7 @@ fi
 if $start_citus; then
     echo $(logtime) "starting CITUS cluster"
     srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnc[25-29] ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start &
-    sleep 60
+    sleep 30
     echo $(logtime) "node ${NODE}: $(ps -ef | grep postgres | grep -v grep)"
     if [ ${NODE} = "$COORD" ]; then
         echo $(logtime) "node ${NODE}: $( ${INSTALLDIR}/bin/psql -c "SELECT * FROM citus_get_active_worker_nodes();" )"
@@ -109,4 +109,5 @@ fi
 # gracefully kill CITUS after Xact experiment tasks exits
 echo $(logtime) "stopping all CITUS nodes"
 srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnc[25-29] ${INSTALLDIR}/bin/pg_ctl stop
-sleep 60
+sleep 30
+wait
