@@ -14,7 +14,8 @@ TEMPDIR='/temp/teama-data'
 LOGDIR=${HOME}/cs4224a_citus/logs
 LOGFILE=${LOGDIR}/citus-startup-${NODE}.log 2>&1
 XACTDIR='/temp/cs4224a/project_files/xact_files'
-RESULTSDIR=$HOME/cs4224a_citus/results
+# RESULTSDIR=$HOME/cs4224a_citus/results
+RESULTSDIR=$HOME/cs4224a_citus/results_jem
 SCRIPTSDIR="$HOME/project_files/scripts"
 
 # CITUS node variables
