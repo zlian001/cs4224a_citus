@@ -133,7 +133,7 @@ TXN_QUERIES = {
             ),
 
             last_l_orders AS (
-                SELECT O_ID, O_ENTRY_D, O_C_ID, O_W_ID
+                SELECT O_ID, O_ENTRY_D, O_C_ID, O_W_ID, O_D_ID
                 FROM customer_order
                 WHERE O_W_ID = %s AND O_D_ID = %s AND O_ID < (SELECT D_NEXT_O_ID FROM district_next_order) AND O_ID >= (SELECT D_NEXT_O_ID - %s FROM district_next_order)
                 ORDER BY O_ID DESC
@@ -148,12 +148,12 @@ TXN_QUERIES = {
             ),
 
             max_quantity_items AS (
-                SELECT O_ID, OL_I_ID, I_NAME, OL_QUANTITY
+                SELECT OL_O_ID, OL_I_ID, I_NAME, OL_QUANTITY
                 FROM popular_items
-                WHERE (O_ID, OL_QUANTITY) IN (
-                    SELECT O_ID, MAX(OL_QUANTITY)
+                WHERE (OL_O_ID, OL_QUANTITY) IN (
+                    SELECT OL_O_ID, MAX(OL_QUANTITY)
                     FROM popular_items
-                    GROUP BY O_ID
+                    GROUP BY OL_O_ID
                 )
             ),
 
@@ -175,7 +175,7 @@ TXN_QUERIES = {
             FROM
                 last_l_orders LLO
             JOIN customer C ON LLO.O_C_ID = C.C_ID
-            JOIN max_quantity_items MQI ON LLO.O_ID = MQI.O_ID
+            JOIN max_quantity_items MQI ON LLO.O_ID = MQI.OL_O_ID
             JOIN item_popularity IP ON MQI.I_NAME = IP.I_NAME
         """
     }
