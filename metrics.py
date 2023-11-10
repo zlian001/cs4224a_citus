@@ -103,7 +103,6 @@ def write_dbstate_csv(session, results_dir):
             with session.cursor() as cur:
                 for query in queries:
                     start_time = time.time()
-                    rows = session.execute(query)
                     cur.execute(query)
                     rows = cur.fetchall()
                     end_time = time.time()
