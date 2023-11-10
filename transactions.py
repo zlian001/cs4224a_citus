@@ -187,24 +187,48 @@ class Transactions:
 
 
     #delivery txn 2.3
+    # def delivery_txn(self, W_ID, CARRIER_ID):
+    #     with self.conn:
+    #         with self.conn.cursor() as cur:
+    #             print("in delivery xact")
+    #             for DISTRICT_NO in range(1, 11):
+    #                 cur.execute(self.stmts["DELIVERY_QUERIES"]["getOldestUndeliveredOrder"], (W_ID, DISTRICT_NO))
+    #                 result = cur.fetchone()
+    #                 N = result[0] if result else None
+    #
+    #                 if N is not None:
+    #                     cur.execute(self.stmts["DELIVERY_QUERIES"]["updateOrderCarrierId"], (CARRIER_ID, N, W_ID, DISTRICT_NO))
+    #
+    #                     cur.execute(self.stmts["DELIVERY_QUERIES"]["updateOrderLineDeliveryDate"], (datetime.now(), N, W_ID, DISTRICT_NO))
+    #
+    #                     cur.execute(self.stmts["DELIVERY_QUERIES"]["updateCustomerBalanceAndDeliveryCount"], (N, W_ID, DISTRICT_NO, N, W_ID, DISTRICT_NO))
+    #
+    #         self.conn.commit()
+    #     return
+
     def delivery_txn(self, W_ID, CARRIER_ID):
         with self.conn:
             with self.conn.cursor() as cur:
-                print("in delivery xact")
+                print("Running Delivery Transaction")
                 for DISTRICT_NO in range(1, 11):
-                    cur.execute(self.stmts["DELIVERY_QUERIES"]["getOldestUndeliveredOrder"], (W_ID, DISTRICT_NO))
+                    # Added FOR UPDATE to lock the selected row
+                    cur.execute("""
+                    SELECT o_id FROM customer_order
+                    WHERE o_w_id = %s AND o_d_id = %s AND o_carrier_id IS NULL
+                    ORDER BY o_id FOR UPDATE SKIP LOCKED LIMIT 1;
+                """, (W_ID, DISTRICT_NO))
                     result = cur.fetchone()
                     N = result[0] if result else None
 
                     if N is not None:
                         cur.execute(self.stmts["DELIVERY_QUERIES"]["updateOrderCarrierId"], (CARRIER_ID, N, W_ID, DISTRICT_NO))
-
                         cur.execute(self.stmts["DELIVERY_QUERIES"]["updateOrderLineDeliveryDate"], (datetime.now(), N, W_ID, DISTRICT_NO))
-
                         cur.execute(self.stmts["DELIVERY_QUERIES"]["updateCustomerBalanceAndDeliveryCount"], (N, W_ID, DISTRICT_NO, N, W_ID, DISTRICT_NO))
 
+            # Commit at the end outside of the loop
             self.conn.commit()
         return
+
 
     #top-balance transcations 2.7
     def top_balance_txn(self):
