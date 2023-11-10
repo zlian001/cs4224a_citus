@@ -15,41 +15,83 @@ class Transactions:
         )
 
     #payment transaction 2.2
+    # def payment_txn(self, c_w_id, c_d_id, c_id, payment):
+    #     with self.conn:
+    #         with self.conn.cursor() as cur:
+    #
+    #             cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]["updateWarehouseYtd"], (payment, c_w_id))
+    #             cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]["updateDistrictYtd"], (payment, c_w_id, c_d_id))
+    #             cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]["updateCustomerPayment"], (payment, payment, c_w_id, c_d_id, c_id))
+    #             cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]["getCustomerInfo"], (c_w_id, c_d_id, c_id))
+    #             customer_info = cur.fetchone()
+    #             print("Customer Info:", customer_info)
+    #             print("Payment Amount:", payment)
+    #
+    #
+    #
+    #     return
+
     def payment_txn(self, c_w_id, c_d_id, c_id, payment):
         with self.conn:
             with self.conn.cursor() as cur:
-
+                # Lock customer row
+                cur.execute("SELECT * FROM customer WHERE c_w_id = %s AND c_d_id = %s AND c_id = %s FOR UPDATE", (c_w_id, c_d_id, c_id))
+                # Update warehouse
                 cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]["updateWarehouseYtd"], (payment, c_w_id))
+                # Update district
                 cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]["updateDistrictYtd"], (payment, c_w_id, c_d_id))
+                # Update customer payment
                 cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]["updateCustomerPayment"], (payment, payment, c_w_id, c_d_id, c_id))
+                # Get customer info
                 cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]["getCustomerInfo"], (c_w_id, c_d_id, c_id))
                 customer_info = cur.fetchone()
                 print("Customer Info:", customer_info)
                 print("Payment Amount:", payment)
 
-
-
+                self.conn.commit()
         return
-
-
     #delivery txn 2.3
+    # def delivery_txn(self, W_ID, CARRIER_ID):
+    #     with self.conn:
+    #         with self.conn.cursor() as cur:
+    #             for DISTRICT_NO in range(1, 11):
+    #                 cur.execute(self.stmts["DELIVERY_QUERIES"]["getOldestUndeliveredOrder"], (W_ID, DISTRICT_NO))
+    #                 result = cur.fetchone()
+    #                 N = result[0] if result else None
+    #
+    #                 if N is not None:
+    #                     cur.execute(self.stmts["DELIVERY_QUERIES"]["updateOrderCarrierId"], (CARRIER_ID, N, W_ID, DISTRICT_NO))
+    #
+    #                     cur.execute(self.stmts["DELIVERY_QUERIES"]["updateOrderLineDeliveryDate"], (datetime.now(), N, W_ID, DISTRICT_NO))
+    #
+    #                     cur.execute(self.stmts["DELIVERY_QUERIES"]["updateCustomerBalanceAndDeliveryCount"], (N, W_ID, DISTRICT_NO, N, W_ID, DISTRICT_NO))
+    #
+    #         self.conn.commit()
+    #     return
     def delivery_txn(self, W_ID, CARRIER_ID):
         with self.conn:
             with self.conn.cursor() as cur:
                 for DISTRICT_NO in range(1, 11):
-                    cur.execute(self.stmts["DELIVERY_QUERIES"]["getOldestUndeliveredOrder"], (W_ID, DISTRICT_NO))
+                    # Get the oldest undelivered order and lock the associated customer row
+                    cur.execute("""
+                    SELECT o_id, o_c_id FROM customer_order 
+                    WHERE o_w_id = %s AND o_d_id = %s AND o_carrier_id IS NULL 
+                    ORDER BY o_id ASC FOR UPDATE LIMIT 1
+                """, (W_ID, DISTRICT_NO))
                     result = cur.fetchone()
                     N = result[0] if result else None
 
                     if N is not None:
+                        # Update order carrier ID
                         cur.execute(self.stmts["DELIVERY_QUERIES"]["updateOrderCarrierId"], (CARRIER_ID, N, W_ID, DISTRICT_NO))
-
+                        # Update order line delivery date
                         cur.execute(self.stmts["DELIVERY_QUERIES"]["updateOrderLineDeliveryDate"], (datetime.now(), N, W_ID, DISTRICT_NO))
-
+                        # Update customer balance and delivery count
                         cur.execute(self.stmts["DELIVERY_QUERIES"]["updateCustomerBalanceAndDeliveryCount"], (N, W_ID, DISTRICT_NO, N, W_ID, DISTRICT_NO))
 
-            #self.conn.commit()
+                self.conn.commit()
         return
+
 
     #top-balance transcations 2.7
     def top_balance_txn(self):
