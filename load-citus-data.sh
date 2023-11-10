@@ -23,11 +23,11 @@ if [ ${NODE} == "$COORD" ]; then
     sleep 120
     echo $(logtime) "node ${NODE}: distributing tables"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('warehouse', 'w_id');"
-    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('district', 'd_w_id', 'd_id');"
-    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('customer', 'c_w_id', 'c_d_id', 'c_id');"
-    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('customer_order', 'o_w_id', 'o_d_id', 'o_id');"
-    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_reference_table('item');"
-    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('order_line', 'ol_w_id', 'OL_D_ID', 'OL_O_ID', 'OL_I_ID');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('district', 'd_w_id', 'd_id', colocate_with => 'warehouse');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('customer', 'c_w_id', 'c_d_id', 'c_id', colocate_with => 'warehouse');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('customer_order', 'o_w_id', 'o_d_id', 'o_id', colocate_with => 'warehouse');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('item', 'i_id', colocate_with => 'customer_order');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('order_line', 'ol_w_id', 'OL_D_ID', 'OL_O_ID', colocate_with => 'customer_order');"
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('stock', 's_w_id', 'S_I_ID');"
 
     echo $(logtime) "node ${NODE}: creating foreign keys" # can only do so after distribution
