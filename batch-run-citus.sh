@@ -112,6 +112,6 @@ fi
 
 # gracefully kill CITUS after Xact experiment tasks exits
 echo $(logtime) "stopping all CITUS nodes"
-#srun --nodes=5 --ntasks=5 --cpus-per-task=2 --nodelist=${CLUSTER_NODES} ${INSTALLDIR}/bin/pg_ctl stop
-#rm -rf ${TEMPDIR}
+srun --nodes=5 --ntasks=5 --cpus-per-task=2 --nodelist=${CLUSTER_NODES} ${INSTALLDIR}/bin/pg_ctl stop
+rm -rf ${TEMPDIR}
 wait
