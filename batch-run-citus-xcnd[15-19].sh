@@ -6,7 +6,7 @@
 #SBATCH --error=/home/stuproj/cs4224a/cs4224a_citus/slurm_output/citus_batch-%j.err
 #SBATCH --nodelist=xcnd[15-19]
 #SBATCH --mem-per-cpu=2G   # memory per CPU core
-#SBATCH --cpus-per-task=4 # CPUs per srun task
+#SBATCH --cpus-per-task=24 # CPUs per srun task
 
 # proj variables
 INSTALLDIR=$HOME/pgsql
@@ -15,7 +15,7 @@ LOGDIR=${HOME}/cs4224a_citus/logs
 LOGFILE=${LOGDIR}/citus-startup-${NODE}.log 2>&1
 XACTDIR='/temp/cs4224a/project_files/xact_files'
 RESULTSDIR=$HOME/cs4224a_citus/results-jem
-SCRIPTSDIR="$HOME/project_files/scripts"
+SCRIPTSDIR="$HOME/jem/cs4224a_citus"
 
 # CITUS node variables
 COORD="xcnd15"
@@ -49,7 +49,7 @@ done
 # deploy CITUS and project files
 if $deploy_citus; then
     echo $(logtime) "deploying CITUS cluster"
-    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=${CLUSTER_NODES} ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
+    srun --nodes=5 --ntasks=5 --cpus-per-task=16 --nodelist=${CLUSTER_NODES} ${SCRIPTSDIR}/deploy-citus.sh ${COORD} ${WORKERS[@]} &
     srun cp -rp $HOME/project_files /temp/cs4224a/
     echo $(logtime) "copied project data and xact files to nodes"
 fi
@@ -58,7 +58,7 @@ fi
 if $start_citus; then
     echo $(logtime) "starting CITUS cluster"
     #srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=xcnd[45-49] ${INSTALLDIR}/bin/pg_ctl -D ${TEMPDIR} -l ${LOGFILE} -o "-p ${PGPORT}" start &
-    srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=${CLUSTER_NODES} ${INSTALLDIR}/bin/postgres -D ${TEMPDIR} &
+    srun --nodes=5 --ntasks=5 --cpus-per-task=16 --nodelist=${CLUSTER_NODES} ${INSTALLDIR}/bin/postgres -D ${TEMPDIR} &
     sleep 60
     echo $(logtime) "node ${NODE}: $(ps -ef | grep postgres | grep -v grep)"
     if [ ${NODE} = "$COORD" ]; then
@@ -112,6 +112,6 @@ fi
 
 # gracefully kill CITUS after Xact experiment tasks exits
 echo $(logtime) "stopping all CITUS nodes"
-srun --nodes=5 --ntasks=5 --cpus-per-task=4 --nodelist=${CLUSTER_NODES} ${INSTALLDIR}/bin/pg_ctl stop
-rm -rf ${TEMPDIR}
+#srun --nodes=5 --ntasks=5 --cpus-per-task=2 --nodelist=${CLUSTER_NODES} ${INSTALLDIR}/bin/pg_ctl stop
+#rm -rf ${TEMPDIR}
 wait
