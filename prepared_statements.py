@@ -68,7 +68,7 @@ TXN_QUERIES = {
     },
 
     "DELIVERY_QUERIES": {
-        "getOldestUndeliveredOrder": "SELECT MIN(o_id) FROM customer_order WHERE o_w_id = %s AND o_d_id = %s AND o_carrier_id IS NULL",
+        "getOldestUndeliveredOrder": "SELECT o_id FROM customer_order WHERE o_w_id = %s AND o_d_id = %s AND o_carrier_id IS NULL ORDER BY o_id FOR UPDATE SKIP LOCKED LIMIT 1;",
         "updateOrderCarrierId": "UPDATE customer_order SET o_carrier_id = %s WHERE o_w_id = %s AND o_d_id = %s AND o_id = %s",
         "updateOrderLineDeliveryDate": "UPDATE order_line SET ol_delivery_d = %s WHERE ol_w_id = %s AND ol_d_id = %s AND ol_o_id = %s",
         "updateCustomerBalanceAndDeliveryCount": """
