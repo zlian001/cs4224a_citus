@@ -12,6 +12,7 @@ class Transactions:
             user=user,
             host=host
         )
+        self.conn.autocommit = False
 
     def new_order_txn(self, c_id, w_id, d_id, num_items, item_number, supplier_warehouse, quantity):
         # get table values
