@@ -1,19 +1,19 @@
 TXN_QUERIES = {
     "NEW_ORDER": {
         "getWarehouseTaxRate": "SELECT W_TAX FROM WAREHOUSE WHERE W_ID = %s",  # w_id
-        "getDistrict": "SELECT D_TAX, D_NEXT_O_ID FROM DISTRICT WHERE D_ID = %s AND D_W_ID = %s",  # d_id, w_id
-        # d_next_o_id, d_id, w_id
-        "incrementNextOrderId": "UPDATE DISTRICT SET D_NEXT_O_ID = %s WHERE D_ID = %s AND D_W_ID = %s",
+        "getDistrict": "SELECT D_TAX, D_NEXT_O_ID FROM DISTRICT WHERE D_W_ID = %s AND D_ID = %s",  # w_id, d_id
+        # d_next_o_id, w_id, d_id
+        "incrementNextOrderId": "UPDATE DISTRICT SET D_NEXT_O_ID = %s WHERE D_W_ID = %s AND D_ID = %s",
         "getCustomer": "SELECT C_DISCOUNT, C_LAST, C_CREDIT FROM CUSTOMER WHERE C_W_ID = %s AND C_D_ID = %s AND C_ID = %s",  # w_id, d_id, c_id
         # d_next_o_id, d_id, w_id, c_id, o_entry_d, o_carrier_id, o_ol_cnt, o_all_local
         "createOrder": "INSERT INTO CUSTOMER_ORDER (O_ID, O_D_ID, O_W_ID, O_C_ID, O_ENTRY_D, O_CARRIER_ID, O_OL_CNT, O_ALL_LOCAL) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
         # o_id, d_id, w_id
         # "createNewOrder": "INSERT INTO NEW_ORDER (NO_O_ID, NO_D_ID, NO_W_ID) VALUES (?, ?, ?)",
         "getItemInfo": "SELECT I_PRICE, I_NAME, I_DATA FROM ITEM WHERE I_ID = %s",  # ol_i_id
-        # d_id?, ol_i_id, ol_supply_w_id
-        "getStockInfo": "SELECT S_QUANTITY, S_DATA, S_YTD, S_ORDER_CNT, S_REMOTE_CNT FROM STOCK WHERE S_I_ID = %s AND S_W_ID = %s",
-        # s_quantity, s_order_cnt, s_remote_cnt, ol_i_id, ol_supply_w_id
-        "updateStock": "UPDATE STOCK SET S_QUANTITY = %s, S_YTD = %s, S_ORDER_CNT = %s, S_REMOTE_CNT = %s WHERE S_I_ID = %s AND S_W_ID = %s",
+        # d_id?, ol_supply_w_id, ol_i_id
+        "getStockInfo": "SELECT S_QUANTITY, S_DATA, S_YTD, S_ORDER_CNT, S_REMOTE_CNT FROM STOCK WHERE S_W_ID = %s AND S_I_ID = %s",
+        # s_quantity, s_order_cnt, s_remote_cnt, ol_supply_w_id, ol_i_id
+        "updateStock": "UPDATE STOCK SET S_QUANTITY = %s, S_YTD = %s, S_ORDER_CNT = %s, S_REMOTE_CNT = %s WHERE S_W_ID = %s AND S_I_ID = %s",
         # o_id, d_id, w_id, ol_number, ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_dist_info
         "createOrderLine": "INSERT INTO ORDER_LINE (OL_O_ID, OL_D_ID, OL_W_ID, OL_NUMBER, OL_I_ID, OL_SUPPLY_W_ID, OL_DELIVERY_D, OL_QUANTITY, OL_AMOUNT, OL_DIST_INFO) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
     },
@@ -63,17 +63,17 @@ TXN_QUERIES = {
 
     "DELIVERY_QUERIES": {
         "getOldestUndeliveredOrder": "SELECT MIN(o_id) FROM customer_order WHERE o_w_id = %s AND o_d_id = %s AND o_carrier_id IS NULL",
-        "updateOrderCarrierId": "UPDATE customer_order SET o_carrier_id = %s WHERE o_id = %s AND o_w_id = %s AND o_d_id = %s",
-        "updateOrderLineDeliveryDate": "UPDATE order_line SET ol_delivery_d = %s WHERE ol_o_id = %s AND ol_w_id = %s AND ol_d_id = %s",
+        "updateOrderCarrierId": "UPDATE customer_order SET o_carrier_id = %s WHERE o_w_id = %s AND o_d_id = %s AND o_id = %s",
+        "updateOrderLineDeliveryDate": "UPDATE order_line SET ol_delivery_d = %s WHERE ol_w_id = %s AND ol_d_id = %s AND ol_o_id = %s",
         "updateCustomerBalanceAndDeliveryCount": """
             UPDATE customer 
             SET c_balance = COALESCE(c_balance, 0) + 
                 (SELECT COALESCE(SUM(ol_amount), 0) FROM order_line 
-                WHERE ol_o_id = %s AND ol_w_id = %s AND ol_d_id = %s),
+                WHERE ol_w_id = %s AND ol_d_id = %s AND ol_o_id = %s),
                 c_delivery_cnt = c_delivery_cnt + 1 
             WHERE c_id = 
                 (SELECT o_c_id FROM customer_order 
-                WHERE o_id = %s AND o_w_id = %s AND o_d_id = %s)
+                WHERE o_w_id = %s AND o_d_id = %s AND o_id = %s)
         """
     },
 
@@ -93,13 +93,13 @@ TXN_QUERIES = {
             WITH selected_customer_orders AS (
                 SELECT o_id, o_d_id, o_w_id
                 FROM customer_order
-                WHERE o_c_id = %s AND o_d_id = %s AND o_w_id = %s
+                WHERE o_w_id = %s AND o_d_id = %s AND o_c_id = %s
             ),
 
             common_items AS (
                 SELECT ol_i_id
                 FROM order_line
-                WHERE (ol_o_id, ol_d_id, ol_w_id) IN (SELECT o_id, o_d_id, o_w_id FROM selected_customer_orders)
+                WHERE (ol_w_id, ol_d_id, ol_o_id) IN (SELECT o_w_id, o_d_id, o_id FROM selected_customer_orders)
                 GROUP BY ol_i_id
                 HAVING COUNT(ol_i_id) > 1
             ),

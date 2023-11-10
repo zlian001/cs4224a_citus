@@ -21,10 +21,10 @@ class Transactions:
                             ["getWarehouseTaxRate"], (w_id,))
                 W = cur.fetchone()
                 cur.execute(self.stmts['NEW_ORDER']
-                            ["getDistrict"], (d_id, w_id))
+                            ["getDistrict"], (w_id, d_id))
                 D = cur.fetchone()
                 cur.execute(self.stmts['NEW_ORDER']["incrementNextOrderId"],
-                            (D[1] + 1, d_id, w_id))
+                            (D[1] + 1, w_id, d_id))
                 cur.execute(self.stmts['NEW_ORDER']
                             ["getCustomer"], (w_id, d_id, c_id))
                 C = cur.fetchone()
@@ -56,7 +56,7 @@ class Transactions:
                                 ["getItemInfo"], (curr_s_i_id,))
                     I = cur.fetchone()
                     cur.execute(self.stmts['NEW_ORDER']["getStockInfo"],
-                                (curr_s_i_id, curr_s_wh_id))
+                                (curr_s_wh_id, curr_s_i_id))
                     S = cur.fetchone()
                     adj_qty = S[0] - curr_deci_qty
 
@@ -199,13 +199,13 @@ class Transactions:
 
                     if N is not None:
                         cur.execute(
-                            self.stmts["DELIVERY_QUERIES"]["updateOrderCarrierId"], (CARRIER_ID, N, W_ID, DISTRICT_NO))
+                            self.stmts["DELIVERY_QUERIES"]["updateOrderCarrierId"], (CARRIER_ID, W_ID, DISTRICT_NO, N))
 
                         cur.execute(self.stmts["DELIVERY_QUERIES"]["updateOrderLineDeliveryDate"], (
-                            datetime.now(), N, W_ID, DISTRICT_NO))
+                            datetime.now(), W_ID, DISTRICT_NO, N))
 
                         cur.execute(self.stmts["DELIVERY_QUERIES"]["updateCustomerBalanceAndDeliveryCount"], (
-                            N, W_ID, DISTRICT_NO, N, W_ID, DISTRICT_NO))
+                            W_ID, DISTRICT_NO, N, W_ID, DISTRICT_NO, N))
 
             self.conn.commit()
 
@@ -239,7 +239,7 @@ class Transactions:
         with self.conn:
             with self.conn.cursor() as cur:
                 # The order of parameters here should match the placeholders in the SQL query.
-                cur.execute(query, (c_id, c_d_id, c_w_id, c_w_id))
+                cur.execute(query, (c_w_id, c_d_id, c_id, c_w_id))
                 related_customers = cur.fetchall()
 
         for related_customer in related_customers:
