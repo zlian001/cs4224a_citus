@@ -6,7 +6,7 @@
 #SBATCH --error=/home/stuproj/cs4224a/cs4224a_citus/slurm_output/citus_batch-%j.err
 #SBATCH --nodelist=xcnd[45-49]
 #SBATCH --mem-per-cpu=2G   # memory per CPU core
-#SBATCH --cpus-per-task=20 # CPUs per srun task
+#SBATCH --cpus-per-task=16 # CPUs per srun task
 
 # proj variables
 INSTALLDIR=$HOME/pgsql
