@@ -51,13 +51,19 @@ TXN_QUERIES = {
         "getCustomerInfo": """
             SELECT c_w_id, c_d_id, c_id, c_first, c_middle, c_last,
                 c_street_1, c_street_2, c_city, c_state, c_zip,
-                c_phone, c_since, c_credit, c_credit_lim, c_discount, c_balance,
-                w_street_1, w_street_2, w_city, w_state, w_zip,
-                d_street_1, d_street_2, d_city, d_state, d_zip
+                c_phone, c_since, c_credit, c_credit_lim, c_discount, c_balance
             FROM customer
-            JOIN warehouse ON c_w_id = w_id
-            JOIN district ON c_w_id = d_w_id AND c_d_id = d_id
             WHERE c_w_id = %s AND c_d_id = %s AND c_id = %s;
+        """,
+        "getWarehouseInfo": """
+            SELECT w_street_1, w_street_2, w_city, w_state, w_zip
+            FROM warehouse
+            WHERE w_id = %s;
+        """,
+        "getDistrictInfo": """
+            SELECT d_street_1, d_street_2, d_city, d_state, d_zip
+            FROM district
+            WHERE d_w_id = %s AND d_id = %s;
         """
     },
 

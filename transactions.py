@@ -182,7 +182,15 @@ class Transactions:
                 cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]
                             ["getCustomerInfo"], (c_w_id, c_d_id, c_id))
                 customer_info = cur.fetchone()
+                cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]
+                            ["getWarehouseInfo"], (c_w_id,))
+                warehouse_info = cur.fetchone()
+                cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]
+                            ["getDistrictInfo"], (c_w_id, c_d_id))
+                district_info = cur.fetchone()
                 print("Customer Info:", customer_info)
+                print("Warehouse Info:", warehouse_info)
+                print("District Info:", district_info)
                 print("Payment Amount:", payment)
 
         return
