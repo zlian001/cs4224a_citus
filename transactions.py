@@ -12,7 +12,7 @@ class Transactions:
             user=user,
             host=host
         )
-        self.conn.autocommit = False
+        self.conn.autocommit = True
 
     def new_order_txn(self, c_id, w_id, d_id, num_items, item_number, supplier_warehouse, quantity):
         # get table values
@@ -173,7 +173,6 @@ class Transactions:
     def payment_txn(self, c_w_id, c_d_id, c_id, payment):
         with self.conn:
             with self.conn.cursor() as cur:
-
                 cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]
                             ["updateWarehouseYtd"], (payment, c_w_id))
                 cur.execute(self.stmts["PAYMENT_TXN_QUERIES"]
@@ -207,8 +206,7 @@ class Transactions:
 
                         cur.execute(self.stmts["DELIVERY_QUERIES"]["updateCustomerBalanceAndDeliveryCount"], (
                             W_ID, DISTRICT_NO, N, W_ID, DISTRICT_NO, N))
-
-            self.conn.commit()
+            # self.conn.commit()
 
         return
 
