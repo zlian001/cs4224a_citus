@@ -18,7 +18,7 @@ echo $(logtime) "node ${NODE}: starting CITUS deployment"
 # install CITUS if not exists
 if [ ! -d ${TEMPDIR} ]; then
     echo $(logtime) "node ${NODE}: installing CITUS from scripts"
-    source ${SCRIPTSDIR}/install-citus.sh
+    #source ${SCRIPTSDIR}/install-citus.sh
     source ${SCRIPTSDIR}/init-citus-db.sh
 
     echo $(logtime) "node ${NODE}: configuring CITUS"
