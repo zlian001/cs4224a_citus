@@ -94,38 +94,38 @@ class Transactions:
 
 
     #top-balance transcations 2.7
-    def top_balance_txn(self):
-        print("Top Balance Transaction Output:")
-
-        with self.conn:
-            with self.conn.cursor() as cur:
-                cur.execute(self.stmts["TOP_BALANCE_TXN_QUERIES"]["getTopCustomersWithBalances"])
-                top_customers = cur.fetchall()
-
-        for customer in top_customers:
-            print(f"Customer Name: {customer[0]} {customer[1]} {customer[2]}")
-            print(f"Outstanding Balance: {customer[3]}")
-            print(f"Warehouse Name: {customer[4]}")
-            print(f"District Name: {customer[5]}\n")
-
-        return
+    # def top_balance_txn(self):
+    #     print("Top Balance Transaction Output:")
+    #
+    #     with self.conn:
+    #         with self.conn.cursor() as cur:
+    #             cur.execute(self.stmts["TOP_BALANCE_TXN_QUERIES"]["getTopCustomersWithBalances"])
+    #             top_customers = cur.fetchall()
+    #
+    #     for customer in top_customers:
+    #         print(f"Customer Name: {customer[0]} {customer[1]} {customer[2]}")
+    #         print(f"Outstanding Balance: {customer[3]}")
+    #         print(f"Warehouse Name: {customer[4]}")
+    #         print(f"District Name: {customer[5]}\n")
+    #
+    #     return
 
     #related-customer transactions 2.8
-    def related_customer_txn(self, c_w_id, c_d_id, c_id):
-        print(f"Related Customers Transaction Output for warehouse id {c_w_id}, district id {c_d_id}, customer id {c_id}:")
-
-        query = self.stmts["RELATED_CUSTOMER_TXN_QUERIES"]["findRelatedCustomers"]
-
-        with self.conn:
-            with self.conn.cursor() as cur:
-                # The order of parameters here should match the placeholders in the SQL query.
-                cur.execute(query, (c_id, c_d_id, c_w_id, c_w_id))
-                related_customers = cur.fetchall()
-
-        for related_customer in related_customers:
-            print(f"Customer Identifier: (C W_ID: {related_customer[0]}, C D_ID: {related_customer[1]}, C ID: {related_customer[2]})")
-
-        return
+    # def related_customer_txn(self, c_w_id, c_d_id, c_id):
+    #     print(f"Related Customers Transaction Output for warehouse id {c_w_id}, district id {c_d_id}, customer id {c_id}:")
+    #
+    #     query = self.stmts["RELATED_CUSTOMER_TXN_QUERIES"]["findRelatedCustomers"]
+    #
+    #     with self.conn:
+    #         with self.conn.cursor() as cur:
+    #             # The order of parameters here should match the placeholders in the SQL query.
+    #             cur.execute(query, (c_id, c_d_id, c_w_id, c_w_id))
+    #             related_customers = cur.fetchall()
+    #
+    #     for related_customer in related_customers:
+    #         print(f"Customer Identifier: (C W_ID: {related_customer[0]}, C D_ID: {related_customer[1]}, C ID: {related_customer[2]})")
+    #
+    #     return
 
     # define the datatypes for each transaction
     def cast_payment_dtypes(self, params):
@@ -133,11 +133,11 @@ class Transactions:
     def cast_delivery_dtypes(self, params):
         return [int(params[0]), int(params[1])]
 
-    def cast_top_balance_dtypes(self, params):
-        return []
-
-    def cast_related_customer_dtypes(self, params):
-        return [int(params[0]), int(params[1]), int(params[2])]
+    # def cast_top_balance_dtypes(self, params):
+    #     return []
+    #
+    # def cast_related_customer_dtypes(self, params):
+    #     return [int(params[0]), int(params[1]), int(params[2])]
 
 
     def close(self):
