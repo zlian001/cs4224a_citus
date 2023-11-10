@@ -22,13 +22,13 @@ if [ ${NODE} == "$COORD" ]; then
 
     sleep 120
     echo $(logtime) "node ${NODE}: distributing tables"
-    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_reference_table('warehouse');"
-    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_reference_table('district');"
-    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('customer', 'c_id');"
-    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('customer_order', 'o_id', colocate_with => 'customer');"
-    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('item', 'i_id');"
-    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('order_line', 'ol_o_id', colocate_with => 'customer_order');"
-    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('stock', 's_i_id');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('warehouse', 'w_id');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('district', 'd_w_id');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('customer', 'c_w_id');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('customer_order', 'o_w_id');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_reference_table('item');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('order_line', 'ol_w_id');"
+    ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "SELECT create_distributed_table('stock', 's_w_id');"
 
     echo $(logtime) "node ${NODE}: creating foreign keys" # can only do so after distribution
     ${INSTALLDIR}/bin/psql -U cs4224a -d $PGDATABASE -c "ALTER TABLE order_line ADD FOREIGN KEY (OL_I_ID) REFERENCES item(I_ID);"
