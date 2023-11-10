@@ -18,11 +18,11 @@ txn_funcs_dict = {
     "N": (xact.new_order_txn, xact.cast_new_order_dtypes),
     "P": (xact.payment_txn, xact.cast_payment_dtypes),
     "D": (xact.delivery_txn, xact.cast_delivery_dtypes),
-    "O": (xact.order_status_txn, xact.cast_order_status_dtypes),
-    "S": (xact.stock_level_txn, xact.cast_stock_level_dtypes)
-    "I": (xact.popular_item_txn, xact.cast_popular_item_dtypes),
-    "T": (xact.top_balance_txn, xact.cast_top_balance_dtypes),
-    "R": (xact.related_customer_txn, xact.cast_related_customer_dtypes),
+    #"O": (xact.order_status_txn, xact.cast_order_status_dtypes),
+    #"S": (xact.stock_level_txn, xact.cast_stock_level_dtypes)
+    #"I": (xact.popular_item_txn, xact.cast_popular_item_dtypes),
+    #"T": (xact.top_balance_txn, xact.cast_top_balance_dtypes),
+    #"R": (xact.related_customer_txn, xact.cast_related_customer_dtypes),
 }
 
 total_num_exec_xacts = 0
@@ -37,7 +37,7 @@ for line in sys.stdin:
     # get correct transaction function and parameter data type conversion function from dict
     txn_type = params[0]
     # TODO: remove this test txn_type condition for PROD
-    if txn_type not in ["N", "O", "S"]:
+    if txn_type not in ["N", "P", "D"]:
         continue
     txn_func, txn_dtypes_func = txn_funcs_dict[txn_type]
 

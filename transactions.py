@@ -190,6 +190,7 @@ class Transactions:
     def delivery_txn(self, W_ID, CARRIER_ID):
         with self.conn:
             with self.conn.cursor() as cur:
+                print("in delivery xact")
                 for DISTRICT_NO in range(1, 11):
                     cur.execute(self.stmts["DELIVERY_QUERIES"]["getOldestUndeliveredOrder"], (W_ID, DISTRICT_NO))
                     result = cur.fetchone()
